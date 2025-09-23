@@ -1,7 +1,6 @@
 import type { User } from "@/interface/User";
 import type { UserRegistration } from "@/pages/UserLogin";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useActionData } from "react-router-dom";
 import { useAuthStore } from "./userAuth";
 
 const API_URL = "http://localhost:8080/api";

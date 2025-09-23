@@ -136,73 +136,86 @@ func (c *BookController) BuyBooks(ctx *gin.Context) {
 }
 
 func (c *BookController) BorrowBook(ctx *gin.Context) {
-	bookId, _ := strconv.Atoi(ctx.Param("id"))
-	userIdRaw, exists := ctx.Get("userId")
-	var days = 7
+	var req struct {
+		Days int `json:"days"`
+	}
+	if err := ctx.BindJSON(&req); err != nil || req.Days <= 0 {
+		ctx.JSON(400, gin.H{"error": "Ungültiger Body: days fehlt oder ist <= 0"})
+		return
+	}
 
+	userAny, exists := ctx.Get("user")
 	if !exists {
-		ctx.JSON(400, gin.H{"error": "User nicht gefunden"})
+		ctx.JSON(401, gin.H{"error": "Nicht eingeloggt"})
 		return
 	}
+	user := userAny.(models.User)
 
-	userId := userIdRaw.(int)
-
-	err := c.Service.BorrowBook(userId, bookId, days)
-
+	bookIdStr := ctx.Param("id")
+	bookId, err := strconv.Atoi(bookIdStr)
 	if err != nil {
-		log.Println("Fehler bei Controller BorrowBook", err)
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(400, gin.H{"error": "Ungültige Buch-ID"})
 		return
 	}
 
-	ctx.JSON(200, "Buch wurde erfolgreich ausgeliehen")
-
+	// Hier Service aufrufen, z.B.:
+	err = c.Service.BorrowBook(user.ID, bookId, req.Days)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"success": true})
 }
 
 func (c *BookController) GetBorrowedBooks(ctx *gin.Context) {
-	userIdRaw, exists := ctx.Get("userId")
+	userAny, exists := ctx.Get("user")
 	if !exists {
-		ctx.JSON(400, gin.H{"error": "User Id nicht in token gefunden"})
+		ctx.JSON(401, gin.H{"error": "Nicht eingeloggt"})
 		return
 	}
-
-	userId, ok := userIdRaw.(int)
-
-	if !ok {
-		ctx.JSON(400, gin.H{"error": "Ungültiger User"})
-		return
-	}
-
-	books, err := c.Service.GetBorrowedBooks(userId)
-
+	user := userAny.(models.User)
+	books, err := c.Service.GetBorrowedBooks(user.ID)
 	if err != nil {
-		log.Println("Fehler bei Controller getBorrowedBooks")
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(200, books)
 }
 
 func (c *BookController) GiveBorrowedBookBack(ctx *gin.Context) {
-	bookId, _ := strconv.Atoi(ctx.Param("id"))
-	userIdRaw, exists := ctx.Get("userId")
+	bookIdStr := ctx.Param("id")
+	bookId, err := strconv.Atoi(bookIdStr)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Ungültige Buch-ID"})
+		return
+	}
+
+	userAny, exists := ctx.Get("user")
 	if !exists {
-		ctx.JSON(400, gin.H{"error": "User Id nicht in token gefunden"})
+		ctx.JSON(401, gin.H{"error": "Nicht eingeloggt"})
+		return
+	}
+	user := userAny.(models.User)
+
+	err = c.Service.GiveBorrowedBookBack(user.ID, bookId)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	userId, ok := userIdRaw.(int)
+	ctx.JSON(200, gin.H{"message": "Buch erfolgreich zurückgegeben"})
+}
 
-	if !ok {
-		ctx.JSON(400, gin.H{"error": "Ungültiger User"})
+func (c *BookController) SetUser(ctx *gin.Context) {
+	userIdFloat, err := strconv.ParseFloat(ctx.Param("userId"), 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Ungültige UserID"})
 		return
 	}
 
-	books := c.Service.GiveBorrowedBookBack(userId, bookId)
-	if books != nil {
-		ctx.JSON(400, gin.H{"error": books.Error()})
-		return
-	}
+	role := ctx.Param("role")
 
-	ctx.JSON(200, books)
+	ctx.Set("user", models.User{ID: int(userIdFloat), Role: role})
+
+	ctx.JSON(200, gin.H{"message": "User gesetzt"})
 }

@@ -13,7 +13,7 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 		// Also die Middleware wird beim Login aufgerufen und extrahiert die userId aus dem header
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
-			ctx.AbortWithStatusJSON(401, gin.H{"error": "Token fehlt"})
+			ctx.AbortWithStatusJSON(401, gin.H{"error": "Authorization Header fehlt"})
 			return
 		}
 
@@ -39,8 +39,7 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 
 		role, ok := claims["role"].(string)
 		if !ok {
-			ctx.AbortWithStatusJSON(401, gin.H{"error": "Role fehlt"})
-			return
+			role = "user" // Standardrolle
 		}
 
 		ctx.Set("user", models.User{ID: int(userIdFloat), Role: role})
