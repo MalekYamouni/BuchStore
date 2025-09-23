@@ -1,0 +1,22 @@
+# Projekt-Root ist hier
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # wohin die kompilierten Binaries gehen
+  bin = "tmp/main.exe"
+  # wie gebaut werden soll -> wir sagen Go, er soll main.go in cmd/backend bauen
+  cmd = "go build -o ./tmp/main.exe ./cmd/backend"
+  delay = 1000
+  exclude_dir = ["assets", "tmp", "vendor", "testdata"]
+  exclude_regex = ["_test.go"]
+  include_ext = ["go", "tpl", "tmpl", "html"]
+
+[color]
+  build = "yellow"
+  main = "magenta"
+  runner = "green"
+  watcher = "cyan"
+
+[log]
+  time = true

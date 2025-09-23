@@ -1,0 +1,21 @@
+.total-price {
+  display: flex;
+  justify-content: center;   /* horizontal zentrieren */
+  align-items: center;       /* vertikal zentrieren */
+  margin-top: 20px;          /* Abstand nach oben */
+  padding: 15px 25px;        /* Innenabstand */
+  background-color: #f0f4f8; /* leichtes Grau-Blau für modernen Look */
+  border-radius: 12px;       /* abgerundete Ecken */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* softer Schatten */
+  font-weight: bold;          /* Text fett */
+  font-size: 1.2rem;          /* gut lesbare Schriftgröße */
+  color: #1f2937;             /* dunkles Grau für guten Kontrast */
+  width: fit-content;         /* passt sich dem Inhalt an */
+  margin-left: auto;           /* zentrieren im flex-container */
+  margin-right: auto;
+}
+
+/* Optional: kleine Animation beim Preis ändern */
+.total-price h {
+  transition: all 0.3s ease-in-out;
+}
