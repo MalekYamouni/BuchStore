@@ -38,18 +38,22 @@ func (a *AuthController) Login(ctx *gin.Context) {
 	}
 
 	// Hier wird der validierte User im Speicher des Tokens unter dem Tag "userId" gespeichert
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	claims := jwt.MapClaims{
 		"userId": user.ID,
-		"role":   user.Role,
-		"exp":    time.Now().Add(1 * time.Hour).Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte(a.Secret))
+		"role":   user.Role, // Muss "admin" sein, wenn der User Admin ist!
+		"exp":    time.Now().Add(24 * time.Hour).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signed, err := token.SignedString([]byte(a.Secret))
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Token konnte nicht erstellt werden"})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"token": tokenString, "userId": user.ID, "role": user.Role})
+	ctx.JSON(200, gin.H{
+		"token":  signed,
+		"userId": user.ID,
+		"role":   user.Role, // <--- wichtig!
+	})
 }

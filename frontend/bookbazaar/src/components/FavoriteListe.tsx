@@ -11,11 +11,13 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Input } from "./ui/input";
+import type { Book } from "@/interface/Book";
 
 function FavoriteList() {
   const { favorites } = useFavoritesStore();
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [selectedCard, setSelectedCard] = useState<Book>();
 
   const filteredFavorites = favorites.filter((book) => {
     if (filter !== "all" && book.genre !== filter) {
@@ -37,7 +39,7 @@ function FavoriteList() {
   });
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 p-5">
       <Label className="text-5xl m-5 flex items-center gap-3">
         <BookHeart size={36}></BookHeart>Favoriten
       </Label>
@@ -60,21 +62,41 @@ function FavoriteList() {
           className="w-60"
         ></Input>
       </div>
-      {filteredFavorites.length === 0 ? (
-        <Label className="text-2xl m-5 flex items-center gap-3">
-          Keine Favoriten hinzugefügt
-        </Label>
-      ) : (
-        filteredFavorites.map((book) => (
-          <BookCard
-            key={book.id}
-            book={book}
-            isFavorite={true}
-            showDeleteButton={false}
-            showCartButton={true}
-          />
-        ))
-      )}
+      <div className="flex gap-10">
+        <div className="flex-1 flex flex-col gap-3">
+          <h2 className="text-2xl font-bold ml-5 bg-gray-200 pl-6 rounded-br-full">
+            Ihre Favoriten
+          </h2>
+          {filteredFavorites.length === 0 ? (
+            <Label className="text-2xl m-5 flex items-center gap-3">
+              Keine Favoriten hinzugefügt
+            </Label>
+          ) : (
+            filteredFavorites.map((book) => (
+              <BookCard
+                key={book.id}
+                book={book}
+                isFavorite={true}
+                showDeleteButton={false}
+                showCartButton={true}
+                showBorrowButton={false}
+                onClick={(b) => setSelectedCard(b)}
+                isBorrowpage={false}
+              />
+            ))
+          )}
+        </div>
+        <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg">
+          {selectedCard ? (
+            <div>
+              <h2 className="text-3xl mb-2">{selectedCard.name}</h2>
+              <p>{selectedCard.descriptionLong}</p>
+            </div>
+          ) : (
+            <p>Bitte wähle ein Buch, um Details zu sehen.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

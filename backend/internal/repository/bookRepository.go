@@ -36,7 +36,7 @@ func (r *BookRepository) GetAll() ([]models.Book, error) {
 }
 
 func (r *BookRepository) GetBorrowedBooks(userId int) ([]models.Book, error) {
-	rows, err := r.db.Query("SELECT b.id, b.author, b.name, b.price, b.genre, b.description, b.descriptionlong, b.quantity, b.is_borrowed, b.borrowprice FROM books b INNER JOIN borrowed_books bb ON bb.book_id = b.id WHERE bb.user_id = $1 AND b.is_borrowed = true AND bb.returned_at IS NULL", userId)
+	rows, err := r.db.Query("SELECT b.id, b.author, b.name, b.price, b.genre, b.description, b.descriptionlong, b.quantity, b.is_borrowed, b.borrowprice, bb.due_at FROM books b INNER JOIN borrowed_books bb ON bb.book_id = b.id WHERE bb.user_id = $1 AND b.is_borrowed = true AND bb.returned_at IS NULL", userId)
 
 	if err != nil {
 		log.Println("Fehler bei der BorrowedBooks-Query")
@@ -47,7 +47,7 @@ func (r *BookRepository) GetBorrowedBooks(userId int) ([]models.Book, error) {
 	var borrowedBooks []models.Book
 	for rows.Next() {
 		var book models.Book
-		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Genre, &book.Description, &book.Descriptionlong, &book.Quantity, &book.IsBorrowed, &book.BorrowPrice); err != nil {
+		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Genre, &book.Description, &book.Descriptionlong, &book.Quantity, &book.IsBorrowed, &book.BorrowPrice, &book.DueAt); err != nil {
 			log.Println("Fehler beim Scan der ausgeliehenen Bücher", err)
 			return nil, err
 		}
@@ -81,7 +81,6 @@ func (r *BookRepository) Add(book *models.Book) error {
 	if err != nil {
 		return err
 	}
-
 	if exists {
 		return fmt.Errorf("buch '%s' von '%s' existiert bereits", book.Name, book.Author)
 	}
@@ -291,7 +290,6 @@ func (r *BookRepository) BorrowBook(userId, bookId, days int) error {
 	}
 
 	return tx.Commit()
-
 }
 
 func (r *BookRepository) GiveBorrowedBookBack(userId, bookId int) error {

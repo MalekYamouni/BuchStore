@@ -106,10 +106,25 @@ function BookCard({
           </Button>
         )}
         {!book.isBorrowed && showBorrowButton && (
-          <Button onClick={() => handleBorrow(book.id)}>ausleihen</Button>
+          <Button
+            className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
+            onClick={() => handleBorrow(book.id)}
+          >
+            ausleihen
+          </Button>
         )}
         {book.isBorrowed && showBorrowButton && (
-          <Button onClick={() => handleGiveBack(book.id)}>zurückgeben</Button>
+          <Button className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 " onClick={() => handleGiveBack(book.id)}>zurückgeben</Button>
+        )}
+        {book.dueAt && book.dueAt !== "0001-01-01T00:00:00Z" && (
+          <span>
+            Fällig am:{" "}
+            {new Date(book.dueAt).toLocaleDateString("de-DE", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            })}
+          </span>
         )}
       </CardFooter>
       <div className="pl-6">

@@ -5,7 +5,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from "@radix-ui/react-navigation-menu";
-import { LogIn, LogOut, UserRound, UserRoundX } from "lucide-react";
+import { LogOut, UserRound } from "lucide-react";
 import { useAuthStore } from "@/hooks/userAuth";
 import {
   DropdownMenu,
@@ -17,7 +17,9 @@ import {
 
 function NavBar() {
   const location = useLocation();
-  const { isLoggedIn, logout } = useAuthStore();
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const logout = useAuthStore((s) => s.logout);
+  const isAdmin = useAuthStore((s) => s.isAdmin());
   return (
     <div>
       <NavigationMenu>
@@ -51,14 +53,16 @@ function NavBar() {
               Favoriten
             </Link>
           </NavigationMenuLink>
-          <NavigationMenuLink asChild>
-            <Link
-              className={location.pathname === "/add" ? "active" : ""}
-              to="/add"
-            >
-              Erstellen
-            </Link>
-          </NavigationMenuLink>
+          {isAdmin && (
+            <NavigationMenuLink asChild>
+              <Link
+                className={location.pathname === "/add" ? "active" : ""}
+                to="/add"
+              >
+                Erstellen
+              </Link>
+            </NavigationMenuLink>
+          )}
           <NavigationMenuLink asChild>
             <Link
               className={location.pathname === "/cart" ? "active" : ""}

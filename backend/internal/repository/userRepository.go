@@ -41,7 +41,7 @@ func (r *UserRepository) GetUserByUserName(username string) (*models.User, error
 
 	var user models.User
 
-	query := `SELECT id, name, lastname, username, email, created, password FROM users WHERE username=$1`
+	query := `SELECT id, name, lastname, username, email, created, password, role FROM users WHERE username=$1`
 
 	err := r.db.QueryRow(query, username).Scan(
 		&user.ID,
@@ -51,6 +51,7 @@ func (r *UserRepository) GetUserByUserName(username string) (*models.User, error
 		&user.Email,
 		&user.Created,
 		&user.Password,
+		&user.Role,
 	)
 
 	if err != nil {
@@ -72,6 +73,7 @@ func (r *UserRepository) GetUserByUserId(userId int) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Println("Gefundener User im Repo:", user)
 	return &user, nil
 }
 

@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useState } from "react";
-
+import { useAuthStore } from "@/hooks/userAuth";
 
 interface NewBook {
   name: string;
@@ -28,6 +28,7 @@ interface NewBook {
 function AddBook() {
   const { addNewBook } = useBooks();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const isAdmin = useAuthStore((s) => s.isAdmin());
 
   const {
     register: registerNewBook,
@@ -61,7 +62,13 @@ function AddBook() {
       reset();
     }
   };
-
+  if (!isAdmin) {
+    return (
+      <div className="text-red-500 text-center mt-10">
+        Nur Administratoren können Bücher hinzufügen.
+      </div>
+    );
+  }
   return (
     <div className="bg-[#333] flex flex-col items-center justify-items-start min-h-screen ">
       <form
@@ -96,7 +103,10 @@ function AddBook() {
           {...registerNewBook("price", {
             required: "Preis ist Pflicht",
             valueAsNumber: true,
-            min: { value: 0.01, message: "Preis muss größer als 0.00 € sein" },
+            min: {
+              value: 0.01,
+              message: "Preis muss größer als 0.00 € sein",
+            },
           })}
           placeholder="Preis"
           type="number"
@@ -111,7 +121,10 @@ function AddBook() {
           {...registerNewBook("borrowPrice", {
             required: "Leihpreis ist Pflicht",
             valueAsNumber: true,
-            min: { value: 0.01, message: "Preis muss größer als 0.00 € sein" },
+            min: {
+              value: 0.01,
+              message: "Preis muss größer als 0.00 € sein",
+            },
           })}
           placeholder="Leihpreis"
           type="number"

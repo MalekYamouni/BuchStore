@@ -14,7 +14,7 @@ import useUsers from "@/hooks/useUser";
 import type { Book } from "@/interface/Book";
 import { Label } from "@radix-ui/react-dropdown-menu";
 
-import { LibrarySquare } from "lucide-react";
+import { CreditCard, LibrarySquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function BorrowBooks() {
@@ -31,7 +31,7 @@ function BorrowBooks() {
     (book) => !borrowedBooks.some((b) => b.id === book.id)
   );
 
-  const userBalance = getuserById?.balance
+  const userBalance = getuserById?.balance ;
 
   const filteredBooks = borrowedBooks.filter((book) => {
     if (genreFilter !== "all" && book.genre !== genreFilter) return false;
@@ -65,6 +65,9 @@ function BorrowBooks() {
     <div className="flex flex-col gap-5 p-5">
       <Label className="text-5xl m-5 flex items-center gap-3">
         <LibrarySquare size={36}></LibrarySquare>Verleih
+      </Label>
+      <Label className="text-2xl m-5 flex items-center gap-3">
+        <CreditCard className="inlineblock"></CreditCard> <span>Guthaben : {userBalance} €</span>
       </Label>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={genreFilter} onValueChange={setGenreFilter}>

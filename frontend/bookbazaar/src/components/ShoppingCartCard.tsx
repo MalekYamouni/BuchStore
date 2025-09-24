@@ -19,8 +19,10 @@ interface ShoppingCartCardProps {
 function ShoppingCartCard({ book }: ShoppingCartCardProps) {
   const { updateQuantity, removeFromCart } = useCartStore();
 
+
   return (
     <div>
+      
       <Card
         className="w-120 h-60 ml-5 display-flex justify-start
      shadow-lg rounded-2xl hover:scale-105 transition-transform duration-300 gap-5 p-4"

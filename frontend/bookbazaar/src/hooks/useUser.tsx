@@ -18,7 +18,7 @@ async function getUsers(token: string): Promise<User[]> {
 }
 
 async function GetUserById(token: string): Promise<User> {
-  const res = await fetch(`${API_URL}/user/:id`, {
+  const res = await fetch(`${API_URL}/user/me`, {
     method: "GET",
     headers: { "Content-Type": "application/json" , Authorization: `Bearer ${token}`},
   });
@@ -38,10 +38,7 @@ async function addUser(user: Omit<UserRegistration, "id">, token: string): Promi
 export default function useUsers() {
   const qc = useQueryClient();
   const {token} = useAuthStore()
-  const userquery = useQuery<User[], Error>({
-    queryFn: () => getUsers(token!),
-    queryKey: ["users"],
-  });
+
 
   const addNewUser = useMutation({
     mutationFn:(user: Omit<UserRegistration, "id">) => addUser(user, token!),
@@ -55,5 +52,5 @@ export default function useUsers() {
     queryKey: ["users"],
   });
 
-  return { ...userquery, addNewUser, ...getuserById };
+  return { addNewUser, ...getuserById };
 }

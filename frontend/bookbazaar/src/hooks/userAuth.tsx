@@ -1,4 +1,3 @@
-import { ro } from "date-fns/locale";
 import { create } from "zustand";
 
 interface AuthState {
@@ -7,7 +6,8 @@ interface AuthState {
   logout: () => void;
   token: string | null;
   userId: number | null;
-  role: string | null
+  role: string | null;
+  isAdmin: () => boolean;
 }
 
 function parseJWT(token: string) {
@@ -30,7 +30,7 @@ const savedRole = localStorage.getItem("role");
 const initalTokenValid = savedToken && isTokenValid(savedToken);
 
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   isLoggedIn: !!initalTokenValid && !!savedUserId,
   token: initalTokenValid ? savedToken : null,
   userId: initalTokenValid && savedUserId ? parseInt(savedUserId) : null,
@@ -54,4 +54,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.removeItem("role")
       set({ isLoggedIn: false, token: null, userId: null, role:null });
   },
+  isAdmin: () => get().role === "admin",
 }));
+

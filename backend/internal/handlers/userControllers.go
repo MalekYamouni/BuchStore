@@ -50,19 +50,18 @@ func (c *UserController) AddUser(ctx *gin.Context) {
 }
 
 func (c *UserController) GetUserByUserId(ctx *gin.Context) {
-	userIdRaw, exists := ctx.Get("userId")
-
+	userAny, exists := ctx.Get("user")
 	if !exists {
-		ctx.JSON(400, "Ungültier User")
+		ctx.JSON(401, gin.H{"error": "Nicht eingeloggt"})
 		return
 	}
 
-	userId := userIdRaw.(int)
+	userID := userAny.(models.User).ID
 
-	user, err := c.Service.GetUserByUserId(userId)
+	user, err := c.Service.GetUserByUserId(userID)
 
 	if err != nil {
-		ctx.JSON(400, "Ungültier User")
+		ctx.JSON(400, "Ungültiger User")
 		return
 	}
 	ctx.JSON(200, user)

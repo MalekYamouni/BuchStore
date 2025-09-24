@@ -65,6 +65,7 @@ export default function useBorrow() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["borrowedBooks"] });
       qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: ["users"] });
     },
   });
 
@@ -73,6 +74,7 @@ export default function useBorrow() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["borrowedBooks"] });
       qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: ["users"] });
     },
   });
 

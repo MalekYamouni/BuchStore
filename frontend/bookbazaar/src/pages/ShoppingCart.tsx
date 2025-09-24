@@ -3,7 +3,7 @@ import ShoppingCartCard from "../components/ShoppingCartCard";
 import "../styles/totalPrice.css";
 import { useCartStore } from "@/hooks/useCart";
 import { Label } from "@radix-ui/react-label";
-import { GlassesIcon, ShoppingBasket } from "lucide-react";
+import { CreditCard, GlassesIcon, ShoppingBasket } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -14,12 +14,15 @@ import {
 } from "@/components/ui/select";
 import useBooks from "@/hooks/useBooks";
 import { Button } from "@/components/ui/button";
+import useUsers from "@/hooks/useUser";
 
 function ShoppingCart() {
   const { shoppingCart } = useCartStore();
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const { buyBooksMutation } = useBooks();
+  const { data: getuserById } = useUsers();
+  const userBalance = getuserById?.balance;
 
   const handleBuyAll = async () => {
     const purchases = shoppingCart.map((book) => ({
@@ -59,9 +62,13 @@ function ShoppingCart() {
   );
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 p-5">
       <Label className="text-5xl m-5 flex items-center gap-3">
         <ShoppingBasket size={36}></ShoppingBasket>Warenkorb
+      </Label>
+      <Label className="text-2xl m-5 flex items-center gap-3">
+        <CreditCard className="inlineblock"></CreditCard>{" "}
+        <span>Guthaben : {userBalance} €</span>
       </Label>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={filter} onValueChange={setFilter}>
@@ -94,7 +101,9 @@ function ShoppingCart() {
       </div>
       <div className="total-price">
         {totalPrice === 0 ? (
-          <p>Stöber Sie hier<GlassesIcon></GlassesIcon></p>
+          <p>
+            Stöber Sie hier<GlassesIcon></GlassesIcon>
+          </p>
         ) : (
           <h2>Gesamtpreis {totalPrice.toFixed(2)}€</h2>
         )}

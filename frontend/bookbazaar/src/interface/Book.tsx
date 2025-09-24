@@ -10,4 +10,5 @@ export interface Book {
   quantity: number
   isBorrowed: boolean
   borrowPrice: number
+  dueAt?: string
 }
