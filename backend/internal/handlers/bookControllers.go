@@ -158,7 +158,6 @@ func (c *BookController) BorrowBook(ctx *gin.Context) {
 		return
 	}
 
-	// Hier Service aufrufen, z.B.:
 	err = c.Service.BorrowBook(user.ID, bookId, req.Days)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})

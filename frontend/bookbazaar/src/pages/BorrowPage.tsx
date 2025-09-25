@@ -61,6 +61,7 @@ function BorrowBooks() {
   if (borrowedBooksQuery.error)
     return <p>Fehler: {(borrowedBooksQuery.error as Error).message}</p>;
 
+  
   return (
     <div className="flex flex-col gap-5 p-5">
       <Label className="text-5xl m-5 flex items-center gap-3">

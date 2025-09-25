@@ -37,12 +37,22 @@ function BookCard({
       await borrowBookMutation.mutateAsync(bookId);
     } catch (err) {}
   };
+  
+  function isOverdue(dueAt?: string) {
+    if (!dueAt || dueAt === "0001-01-01T00:00:00Z") return false;
+    const dueDate = new Date(dueAt);
+    const now = new Date();
+    console.log("dueDate:", dueDate.getTime(), "now:", now.getTime());
+    return dueDate.getTime() < now.getTime();
+  }
+
 
   const handleGiveBack = async (bookId: number) => {
     try {
       await giveBookBack.mutateAsync(bookId);
     } catch (err) {}
   };
+
   return (
     <Card
       onClick={() => onClick(book)}
@@ -105,7 +115,7 @@ function BookCard({
             <Trash2></Trash2>
           </Button>
         )}
-        {!book.isBorrowed && showBorrowButton && (
+        {showBorrowButton && (!book.dueAt || book.dueAt === "0001-01-01T00:00:00Z") && (
           <Button
             className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
             onClick={() => handleBorrow(book.id)}
@@ -113,8 +123,13 @@ function BookCard({
             ausleihen
           </Button>
         )}
-        {book.isBorrowed && showBorrowButton && (
-          <Button className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 " onClick={() => handleGiveBack(book.id)}>zurückgeben</Button>
+        {showBorrowButton && book.dueAt && book.dueAt !== "0001-01-01T00:00:00Z" && (
+          <Button
+            className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
+            onClick={() => handleGiveBack(book.id)}
+          >
+            zurückgeben
+          </Button>
         )}
         {book.dueAt && book.dueAt !== "0001-01-01T00:00:00Z" && (
           <span>
@@ -125,6 +140,9 @@ function BookCard({
               day: "2-digit",
             })}
           </span>
+        )}
+        {isBorrowpage && book.dueAt && isOverdue(book.dueAt) && (
+          <span className="text-red-600 font-bold">Überfällig!</span>
         )}
       </CardFooter>
       <div className="pl-6">

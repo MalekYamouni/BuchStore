@@ -15,7 +15,7 @@ export default function useBorrow() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ days: 7 }),
+      body: JSON.stringify({ days: 1 }),
     });
 
     if (!res.ok) throw new Error("Fehler beim Leihen des Büches.");

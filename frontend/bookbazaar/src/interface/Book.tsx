@@ -8,7 +8,6 @@ export interface Book {
   description: string;
   descriptionLong: string;
   quantity: number
-  isBorrowed: boolean
   borrowPrice: number
   dueAt?: string
 }

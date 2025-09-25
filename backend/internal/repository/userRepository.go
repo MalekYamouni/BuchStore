@@ -73,7 +73,6 @@ func (r *UserRepository) GetUserByUserId(userId int) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Gefundener User im Repo:", user)
 	return &user, nil
 }
 

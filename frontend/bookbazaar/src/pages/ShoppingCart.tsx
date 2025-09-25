@@ -15,6 +15,7 @@ import {
 import useBooks from "@/hooks/useBooks";
 import { Button } from "@/components/ui/button";
 import useUsers from "@/hooks/useUser";
+import { useNavigate } from "react-router-dom";
 
 function ShoppingCart() {
   const { shoppingCart } = useCartStore();
@@ -23,6 +24,7 @@ function ShoppingCart() {
   const { buyBooksMutation } = useBooks();
   const { data: getuserById } = useUsers();
   const userBalance = getuserById?.balance;
+  const navigate = useNavigate();
 
   const handleBuyAll = async () => {
     const purchases = shoppingCart.map((book) => ({
@@ -89,9 +91,18 @@ function ShoppingCart() {
           className="w-60"
         ></Input>
       </div>
-      {filteredCart.map((book) => (
-        <ShoppingCartCard key={book.id} book={book} />
-      ))}
+      <h2 className="text-2xl font-bold ml-5 bg-gray-200 pl-6 rounded-br-full">
+        Ihre Artikel
+      </h2>
+      {filteredCart.length === 0 ? (
+        <Label className="text-2xl m-5 flex items-center gap-3">
+          Keine Artikel hinzugefügt
+        </Label>
+      ) : (
+        filteredCart.map((book) => (
+          <ShoppingCartCard key={book.id} book={book} />
+        ))
+      )}
       <div className="flex justify-center items-center w-5xl pl-5">
         {filteredCart.length > 0 && (
           <Button onClick={handleBuyAll}>
@@ -99,11 +110,14 @@ function ShoppingCart() {
           </Button>
         )}
       </div>
-      <div className="total-price">
+      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-gray-300 max-w-3xl w-full mx-auto hover:underline ">
         {totalPrice === 0 ? (
-          <p>
+          <span
+            onClick={() => navigate("/books")}
+            className="flex items-center gap-3 cursor-pointer hover:underline"
+          >
             Stöber Sie hier<GlassesIcon></GlassesIcon>
-          </p>
+          </span>
         ) : (
           <h2>Gesamtpreis {totalPrice.toFixed(2)}€</h2>
         )}

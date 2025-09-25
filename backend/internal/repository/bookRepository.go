@@ -17,7 +17,7 @@ func NewBookRepository(db *sql.DB) *BookRepository {
 }
 
 func (r *BookRepository) GetAll() ([]models.Book, error) {
-	rows, err := r.db.Query("SELECT id, author, name, price, genre, description, descriptionlong, quantity, is_borrowed, borrowprice FROM books")
+	rows, err := r.db.Query("SELECT id, author, name, price, genre, description, descriptionlong, quantity, borrowprice FROM books")
 	if err != nil {
 		log.Println("Fehler bei Query:", err)
 		return nil, err
@@ -26,7 +26,7 @@ func (r *BookRepository) GetAll() ([]models.Book, error) {
 	var books []models.Book
 	for rows.Next() {
 		var book models.Book
-		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Genre, &book.Description, &book.Descriptionlong, &book.Quantity, &book.IsBorrowed, &book.BorrowPrice); err != nil {
+		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Genre, &book.Description, &book.Descriptionlong, &book.Quantity, &book.BorrowPrice); err != nil {
 			log.Println("Fehler beim Scan:", err)
 			return nil, err
 		}
@@ -36,7 +36,7 @@ func (r *BookRepository) GetAll() ([]models.Book, error) {
 }
 
 func (r *BookRepository) GetBorrowedBooks(userId int) ([]models.Book, error) {
-	rows, err := r.db.Query("SELECT b.id, b.author, b.name, b.price, b.genre, b.description, b.descriptionlong, b.quantity, b.is_borrowed, b.borrowprice, bb.due_at FROM books b INNER JOIN borrowed_books bb ON bb.book_id = b.id WHERE bb.user_id = $1 AND b.is_borrowed = true AND bb.returned_at IS NULL", userId)
+	rows, err := r.db.Query("SELECT b.id, b.author, b.name, b.price, b.genre, b.description, b.descriptionlong, b.quantity, b.borrowprice, bb.due_at FROM books b INNER JOIN borrowed_books bb ON bb.book_id = b.id WHERE bb.user_id = $1 AND bb.returned_at IS NULL", userId)
 
 	if err != nil {
 		log.Println("Fehler bei der BorrowedBooks-Query")
@@ -47,10 +47,12 @@ func (r *BookRepository) GetBorrowedBooks(userId int) ([]models.Book, error) {
 	var borrowedBooks []models.Book
 	for rows.Next() {
 		var book models.Book
-		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Genre, &book.Description, &book.Descriptionlong, &book.Quantity, &book.IsBorrowed, &book.BorrowPrice, &book.DueAt); err != nil {
+		var dueAt time.Time
+		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Genre, &book.Description, &book.Descriptionlong, &book.Quantity, &book.BorrowPrice, &dueAt); err != nil {
 			log.Println("Fehler beim Scan der ausgeliehenen Bücher", err)
 			return nil, err
 		}
+		book.DueAt = dueAt.Format("2006-01-02T15:04:05") // lokale Zeit, keine Zeitzone
 		borrowedBooks = append(borrowedBooks, book)
 	}
 
@@ -138,6 +140,18 @@ func (r *BookRepository) BuyBook(userID, bookID int) error {
 	if err != nil {
 		log.Println("Fehler beim Scannen des Guthabens")
 		return err
+	}
+
+	// Menge prüfen
+	var quantity int
+	err = tx.QueryRow("SELECT quantity FROM books WHERE id=$1", bookID).Scan(&quantity)
+	if err != nil {
+		log.Println("Fehler beim Scannen der Menge")
+		return err
+	}
+
+	if quantity < 1 {
+		return fmt.Errorf("buch ist nicht mehr verfügbar")
 	}
 
 	var price float64
@@ -252,6 +266,18 @@ func (r *BookRepository) BorrowBook(userId, bookId, days int) error {
 		return err
 	}
 
+	// Menge prüfen
+	var quantity int
+	err = tx.QueryRow("SELECT quantity FROM books WHERE id=$1", bookId).Scan(&quantity)
+	if err != nil {
+		log.Println("Fehler beim Scannen der Menge")
+		return err
+	}
+
+	if quantity < 1 {
+		return fmt.Errorf("buch ist nicht mehr verfügbar")
+	}
+
 	var borrowprice float64
 
 	err = tx.QueryRow("SELECT borrowprice FROM books WHERE id=$1", bookId).Scan(&borrowprice)
@@ -268,19 +294,14 @@ func (r *BookRepository) BorrowBook(userId, bookId, days int) error {
 		return err
 	}
 
-	_, err = tx.Exec("UPDATE books Set is_borrowed = true Where id=$1", bookId)
-	if err != nil {
-		log.Println("Fehler beim Update is_borrowed status")
-		return err
-	}
-
 	_, err = tx.Exec("Update books Set quantity = quantity - $1 Where id=$2", 1, bookId)
 	if err != nil {
 		log.Println("Fehler beim Update quantity - 1")
 		return err
 	}
 
-	dueAt := time.Now().AddDate(0, 0, days)
+	loc, _ := time.LoadLocation("Europe/Berlin")
+	dueAt := time.Now().In(loc).Add(10 * time.Minute)
 
 	// Relationstabelle Eintrag
 	_, err = tx.Exec("INSERT INTO borrowed_books (user_id, book_id, borrowed_at, due_at) VALUES ($1, $2, Now(), $3)", userId, bookId, dueAt)
@@ -301,12 +322,6 @@ func (r *BookRepository) GiveBorrowedBookBack(userId, bookId int) error {
 	}
 
 	defer tx.Rollback()
-
-	_, err = tx.Exec("UPDATE books Set is_borrowed = false Where id=$1", bookId)
-	if err != nil {
-		log.Println("Fehler beim Update is_borrowed false")
-		return err
-	}
 
 	_, err = tx.Exec("UPDATE borrowed_books Set returned_at= NOW() WHERE book_id = $1 AND user_id = $2", bookId, userId)
 	if err != nil {
