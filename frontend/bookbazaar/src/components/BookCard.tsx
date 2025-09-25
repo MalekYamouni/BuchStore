@@ -14,7 +14,7 @@ import { useCartStore } from "@/hooks/useCart";
 import { HeartMinus, HeartPlus, ShoppingBasket, Trash2 } from "lucide-react";
 import { useFavoritesStore } from "@/hooks/useFavorite";
 import { Rating, RatingButton } from "./ui/shadcn-io/rating";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useBorrow from "@/hooks/useBorrow";
 
 function BookCard({
@@ -31,13 +31,46 @@ function BookCard({
   const { addToFavorite } = useFavoritesStore();
   const [rating, setRating] = useState(3);
   const { borrowBookMutation, giveBookBack } = useBorrow();
+  const [remainingMs, setRemainingMs] = useState<number | null>(null);
+
+  // Countdown Timer für verbleibende Zeit bis zur Rückgabe
+  useEffect(() => {
+    if (!book?.dueAt || book.dueAt === "0001-01-01T00:00:00Z") {
+      setRemainingMs(null);
+      return;
+    }
+    const target = new Date(book.dueAt).getTime();
+    if (isNaN(target)) {
+      setRemainingMs(null);
+      return;
+    }
+    const update = () => setRemainingMs(target - Date.now());
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, [book?.dueAt]);
+
+  function formatRemainingTime(ms: number) {
+    if (ms <= 0) return "Überfällig!";
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const parts: string[] = [];
+    if (days) parts.push(`${days}d`);
+    if (hours || days) parts.push(`${String(hours).padStart(2, "0")}h`);
+    parts.push(`${String(minutes).padStart(2, "0")}m`);
+    parts.push(`${String(seconds).padStart(2, "0")}s`);
+    return parts.join(" ");
+  }
 
   const handleBorrow = async (bookId: number) => {
     try {
       await borrowBookMutation.mutateAsync(bookId);
     } catch (err) {}
   };
-  
+
   function isOverdue(dueAt?: string) {
     if (!dueAt || dueAt === "0001-01-01T00:00:00Z") return false;
     const dueDate = new Date(dueAt);
@@ -45,7 +78,6 @@ function BookCard({
     console.log("dueDate:", dueDate.getTime(), "now:", now.getTime());
     return dueDate.getTime() < now.getTime();
   }
-
 
   const handleGiveBack = async (bookId: number) => {
     try {
@@ -90,8 +122,9 @@ function BookCard({
           className="bg-gray-200 hover:bg-pink-600 rounded-full px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 "
           variant={"secondary"}
         >
-          {isFavorite ? <HeartMinus></HeartMinus> : <HeartPlus></HeartPlus>}
+          {isFavorite ? <HeartMinus /> : <HeartPlus />}
         </Button>
+
         {showCartButton && (
           <Button
             onClick={(e) => {
@@ -99,52 +132,66 @@ function BookCard({
             }}
             className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
           >
-            <ShoppingBasket></ShoppingBasket>
+            <ShoppingBasket />
           </Button>
         )}
+
         {showDeleteButton && deleteBookFrontEnd && (
           <Button
             onClick={(e) => {
-              e.stopPropagation(),
-                console.log("Book, das gelöscht werden soll:", book);
+              e.stopPropagation();
               deleteBookFrontEnd.mutate(book.id);
             }}
             className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
             variant={"destructive"}
           >
-            <Trash2></Trash2>
+            <Trash2 />
           </Button>
         )}
-        {showBorrowButton && (!book.dueAt || book.dueAt === "0001-01-01T00:00:00Z") && (
-          <Button
-            className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
-            onClick={() => handleBorrow(book.id)}
-          >
-            ausleihen
-          </Button>
-        )}
-        {showBorrowButton && book.dueAt && book.dueAt !== "0001-01-01T00:00:00Z" && (
-          <Button
-            className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
-            onClick={() => handleGiveBack(book.id)}
-          >
-            zurückgeben
-          </Button>
-        )}
+
+        {showBorrowButton &&
+          (!book.dueAt || book.dueAt === "0001-01-01T00:00:00Z") && (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBorrow(book.id);
+              }}
+              className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
+            >
+              ausleihen
+            </Button>
+          )}
+
+        {showBorrowButton &&
+          book.dueAt &&
+          book.dueAt !== "0001-01-01T00:00:00Z" && (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleGiveBack(book.id);
+              }}
+              className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
+            >
+              zurückgeben
+            </Button>
+          )}
+
+        {/* Countdown / Fälligkeitsanzeige: show live countdown wenn remainingMs gesetzt, sonst Fälligkeitsdatum */}
         {book.dueAt && book.dueAt !== "0001-01-01T00:00:00Z" && (
-          <span>
-            Fällig am:{" "}
-            {new Date(book.dueAt).toLocaleDateString("de-DE", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            })}
+          <span
+            className={
+              remainingMs !== null && remainingMs <= 0
+                ? "text-red-600 font-bold"
+                : ""
+            }
+          >
+            {remainingMs !== null
+              ? formatRemainingTime(remainingMs)
+              : "Fällig am: " + new Date(book.dueAt).toLocaleString("de-DE")}
           </span>
         )}
-        {isBorrowpage && book.dueAt && isOverdue(book.dueAt) && (
-          <span className="text-red-600 font-bold">Überfällig!</span>
-        )}
       </CardFooter>
+
       <div className="pl-6">
         <Rating value={rating} onValueChange={setRating}>
           {Array.from({ length: 5 }).map((_, index) => (
