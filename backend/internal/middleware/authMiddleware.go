@@ -21,8 +21,9 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 			return []byte(secret), nil
 		})
+
 		if err != nil || !token.Valid {
-			ctx.AbortWithStatusJSON(401, gin.H{"error": "Token ungültig"})
+			ctx.AbortWithStatusJSON(401, gin.H{"error": "Token abgelaufen"})
 			return
 		}
 		claims, ok := token.Claims.(jwt.MapClaims)

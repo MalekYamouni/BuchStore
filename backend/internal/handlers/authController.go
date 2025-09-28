@@ -41,7 +41,7 @@ func (a *AuthController) Login(ctx *gin.Context) {
 	claims := jwt.MapClaims{
 		"userId": user.ID,
 		"role":   user.Role, // Muss "admin" sein, wenn der User Admin ist!
-		"exp":    time.Now().Add(24 * time.Hour).Unix(),
+		"exp":    time.Now().Add(10 * time.Minute).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signed, err := token.SignedString([]byte(a.Secret))

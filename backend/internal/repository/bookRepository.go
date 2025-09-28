@@ -337,3 +337,102 @@ func (r *BookRepository) GiveBorrowedBookBack(userId, bookId int) error {
 
 	return tx.Commit()
 }
+
+func (r *BookRepository) AddToCart(userId, bookId int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return fmt.Errorf("datenbank nicht erreichbar")
+	}
+
+	defer tx.Rollback()
+
+	_, err = tx.Exec("INSERT INTO user_cart (user_id, cart_book_id, reservation_expires_at) VALUES ($1, $2, Now() + INTERVAL '5 minutes') ON CONFLICT (user_id, cart_book_id) DO UPDATE SET reservation_expires_at = EXCLUDED.reservation_expires_at, removed_at = NULL", userId, bookId)
+	if err != nil {
+		log.Println("Fehler beim Insert in user_cart")
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (r *BookRepository) GetCartBooks(userId int) ([]models.Book, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("datenbank nicht erreichbar")
+	}
+	defer tx.Rollback()
+
+	query := `
+      SELECT b.id, b.author, b.name, b.price, b.genre, b.description, b.descriptionlong,
+             b.quantity, b.borrowprice, uc.id AS cart_id, uc.reservation_expires_at
+      FROM books b
+      INNER JOIN user_cart uc ON b.id = uc.cart_book_id
+      WHERE uc.user_id = $1
+        AND (uc.reservation_expires_at IS NULL OR uc.reservation_expires_at > NOW())
+		AND uc.removed_at IS NULL
+	`
+
+	rows, err := tx.Query(query, userId)
+	if err != nil {
+		log.Println("Fehler bei der Cart-Query", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var books []models.Book
+
+	for rows.Next() {
+		var book models.Book
+		var cartID sql.NullInt64
+		var reservation sql.NullTime
+
+		if err := rows.Scan(
+			&book.ID,
+			&book.Author,
+			&book.Name,
+			&book.Price,
+			&book.Genre,
+			&book.Description,
+			&book.Descriptionlong,
+			&book.Quantity,
+			&book.BorrowPrice,
+			&cartID,
+			&reservation,
+		); err != nil {
+			log.Println("Fehler beim Scan der Cart-Zeile:", err)
+			return nil, err
+		}
+
+		if reservation.Valid {
+			// sende als RFC3339 mit Offset (empfohlen), oder verwende Format("2006-01-02T15:04:05") wenn du keine TZ willst
+			book.ReservationExpiresAt = reservation.Time.Format(time.RFC3339)
+		}
+
+		books = append(books, book)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
+func (r *BookRepository) RemoveFromCart(userId, bookId int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		log.Println("datenbank nicht erreichbar")
+		return err
+	}
+
+	defer tx.Rollback()
+
+	query := "Update user_cart SET removed_at = NOW() Where user_id=$1 AND cart_book_id=2$"
+
+	if _, err := tx.Exec(query, userId, bookId); err != nil {
+		log.Println("Repository Fehler bei RemoveFromCart")
+		return err
+	}
+
+	return nil
+}

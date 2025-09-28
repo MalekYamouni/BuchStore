@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ShoppingCartCard from "../components/ShoppingCartCard";
 import "../styles/totalPrice.css";
-import { useCartStore } from "@/hooks/useCart";
+import { useCartStore } from "@/States/useCartState";
 import { Label } from "@radix-ui/react-label";
 import { CreditCard, GlassesIcon, ShoppingBasket } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -16,15 +16,29 @@ import useBooks from "@/hooks/useBooks";
 import { Button } from "@/components/ui/button";
 import useUsers from "@/hooks/useUser";
 import { useNavigate } from "react-router-dom";
+import useCart from "@/hooks/useCart";
 
 function ShoppingCart() {
-  const { shoppingCart } = useCartStore();
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const { buyBooksMutation } = useBooks();
   const { data: getuserById } = useUsers();
+  
   const userBalance = getuserById?.balance;
   const navigate = useNavigate();
+  const shoppingCart = useCartStore((s) => s.shoppingCart);
+  const addLocal = useCartStore((s) => s.addToCart);
+  const removeLocal = useCartStore((s) => s.removeFromCart);
+  const updateQuantityLocal = useCartStore((s) => s.updateQuantity);
+  const { data: serverCart, isLoading, error, removeFromCart } = useCart();
+
+  useEffect(() => {
+    if (serverCart && Array.isArray(serverCart)) {
+      useCartStore.setState({ shoppingCart: serverCart });
+    }
+  }, [serverCart]);
+
+  
 
   const handleBuyAll = async () => {
     const purchases = shoppingCart.map((book) => ({
@@ -63,6 +77,8 @@ function ShoppingCart() {
     [shoppingCart]
   );
 
+  if(isLoading) return <div>Warenkorb wird geladen...</div>
+  if(error) return <div>Fehler beim Laden des Warenkorbs...</div>
   return (
     <div className="flex flex-col gap-5 p-5">
       <Label className="text-5xl m-5 flex items-center gap-3">
@@ -100,7 +116,24 @@ function ShoppingCart() {
         </Label>
       ) : (
         filteredCart.map((book) => (
-          <ShoppingCartCard key={book.id} book={book} />
+          <ShoppingCartCard
+            key={book.id}
+            book={book}
+            onRemove={async (bookId) => {
+              // optimistic local remove
+              removeLocal(bookId);
+              try {
+                await removeFromCart.mutateAsync(bookId);
+              } catch (err) {
+                // rollback
+                addLocal(book);
+                console.error("Fehler beim Entfernen aus Warenkorb:", err);
+              }
+            }}
+            onQtyChange={(bookId, delta) => {
+              updateQuantityLocal(bookId, delta);
+            }}
+          />
         ))
       )}
       <div className="flex justify-center items-center w-5xl pl-5">

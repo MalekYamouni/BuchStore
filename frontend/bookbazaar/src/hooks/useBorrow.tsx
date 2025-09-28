@@ -1,6 +1,6 @@
 import type { Book } from "@/interface/Book";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "./userAuth";
+import { useAuthStore } from "../States/userAuthState";
 
 export default function useBorrow() {
   const qc = useQueryClient();

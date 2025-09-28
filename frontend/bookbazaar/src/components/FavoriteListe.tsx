@@ -1,7 +1,7 @@
 import { Label } from "@radix-ui/react-label";
 import BookCard from "./BookCard";
 import { BookHeart } from "lucide-react";
-import { useFavoritesStore } from "@/hooks/useFavorite";
+import { useFavoritesStore } from "@/States/useFavoriteState";
 import { useState } from "react";
 import {
   Select,

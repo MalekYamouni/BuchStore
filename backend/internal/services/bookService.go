@@ -24,6 +24,9 @@ type BookService interface {
 	BorrowBook(userId, bookId, days int) error
 	GetBorrowedBooks(userId int) ([]models.Book, error)
 	GiveBorrowedBookBack(userId, bookId int) error
+	GetCartBooks(userId int) ([]models.Book, error)
+	AddToCart(userId, bookId int) error
+	RemoveFromCart(userId, bookId int) error
 }
 
 type DefaultBookService struct {
@@ -160,6 +163,34 @@ func (s *DefaultBookService) GiveBorrowedBookBack(userId, bookId int) error {
 	err := s.repo.GiveBorrowedBookBack(userId, bookId)
 	if err != nil {
 		log.Print("service Fehler beim Buch zurückgeben", err)
+		return err
+	}
+	return nil
+}
+
+func (s *DefaultBookService) GetCartBooks(userId int) ([]models.Book, error) {
+	books, err := s.repo.GetCartBooks(userId)
+	if err != nil {
+		log.Println("service Fehler beim getten der Bücher im Warenkorb", err)
+		return nil, err
+	}
+	return books, nil
+}
+
+func (s *DefaultBookService) AddToCart(userId, bookId int) error {
+	err := s.repo.AddToCart(userId, bookId)
+	if err != nil {
+		log.Println("service Fehler beim hinzufügen der Bücher im Warenkorb", err)
+		return err
+	}
+
+	return nil
+}
+
+func (s *DefaultBookService) RemoveFromCart(userId, bookId int) error {
+	err := s.repo.RemoveFromCart(userId, bookId)
+	if err != nil {
+		log.Println("service Fehler beim entfernen der Bücher aus dem Warenkorb", err)
 		return err
 	}
 	return nil

@@ -6,7 +6,7 @@ import {
   NavigationMenuLink,
 } from "@radix-ui/react-navigation-menu";
 import { LogOut, UserRound } from "lucide-react";
-import { useAuthStore } from "@/hooks/userAuth";
+import { useAuthStore } from "@/States/userAuthState";
 import {
   DropdownMenu,
   DropdownMenuContent,

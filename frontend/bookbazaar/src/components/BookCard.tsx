@@ -10,12 +10,14 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { useCartStore } from "@/hooks/useCart";
+import { useCartStore } from "@/States/useCartState";
 import { HeartMinus, HeartPlus, ShoppingBasket, Trash2 } from "lucide-react";
-import { useFavoritesStore } from "@/hooks/useFavorite";
+import { useFavoritesStore } from "@/States/useFavoriteState";
 import { Rating, RatingButton } from "./ui/shadcn-io/rating";
 import { useEffect, useState } from "react";
 import useBorrow from "@/hooks/useBorrow";
+import useCart from "@/hooks/useCart";
+import type { Book } from "@/interface/Book";
 
 function BookCard({
   book,
@@ -27,12 +29,25 @@ function BookCard({
   isBorrowpage,
 }: BookCardProps) {
   const { deleteBookFrontEnd } = useBooks();
-  const { addToCart } = useCartStore();
   const { addToFavorite } = useFavoritesStore();
   const [rating, setRating] = useState(3);
   const { borrowBookMutation, giveBookBack } = useBorrow();
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
+  const { addToCart } = useCart();
 
+  const addLocal = useCartStore((s) => s.addToCart);
+  const removeLocal = useCartStore((s) => s.removeFromCart);
+  // queryClient not needed here because useCart handles invalidation
+
+  async function handleAdd(book: Book) {
+    addLocal(book);
+    try {
+      await addToCart.mutateAsync(book.id);
+    } catch (err) {
+      removeLocal(book.id);
+      console.error("Fehler beim Hinzufügen zum Warenkorb:", err);
+    }
+  }
   // Countdown Timer für verbleibende Zeit bis zur Rückgabe
   useEffect(() => {
     if (!book?.dueAt || book.dueAt === "0001-01-01T00:00:00Z") {
@@ -71,13 +86,7 @@ function BookCard({
     } catch (err) {}
   };
 
-  function isOverdue(dueAt?: string) {
-    if (!dueAt || dueAt === "0001-01-01T00:00:00Z") return false;
-    const dueDate = new Date(dueAt);
-    const now = new Date();
-    console.log("dueDate:", dueDate.getTime(), "now:", now.getTime());
-    return dueDate.getTime() < now.getTime();
-  }
+  // isOverdue not used currently
 
   const handleGiveBack = async (bookId: number) => {
     try {
@@ -128,7 +137,7 @@ function BookCard({
         {showCartButton && (
           <Button
             onClick={(e) => {
-              e.stopPropagation(), addToCart(book);
+              e.stopPropagation(), handleAdd(book);
             }}
             className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
           >
@@ -196,7 +205,7 @@ function BookCard({
         <Rating value={rating} onValueChange={setRating}>
           {Array.from({ length: 5 }).map((_, index) => (
             <RatingButton
-              className="text-xs text-muted-foreground text-green-600"
+              className="text-xs text-muted-foreground"
               key={index}
             />
           ))}

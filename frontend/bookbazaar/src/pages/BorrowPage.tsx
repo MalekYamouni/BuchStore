@@ -9,11 +9,10 @@ import {
 } from "@/components/ui/select";
 import useBooks from "@/hooks/useBooks";
 import useBorrow from "@/hooks/useBorrow";
-import { useFavoritesStore } from "@/hooks/useFavorite";
+import { useFavoritesStore } from "@/States/useFavoriteState";
 import useUsers from "@/hooks/useUser";
 import type { Book } from "@/interface/Book";
 import { Label } from "@radix-ui/react-dropdown-menu";
-
 import { CreditCard, LibrarySquare } from "lucide-react";
 import { useEffect, useState } from "react";
 

@@ -10,4 +10,5 @@ export interface Book {
   quantity: number
   borrowPrice: number
   dueAt?: string
+  reservationExpiresAt?: string
 }

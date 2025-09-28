@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/hooks/userAuth";
+import { useAuthStore } from "@/States/userAuthState";
 import useUsers from "@/hooks/useUser";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

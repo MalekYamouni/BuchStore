@@ -1,7 +1,7 @@
 import BookCard from "./BookCard";
 import { Label } from "./ui/label";
 import { LibraryBig } from "lucide-react";
-import { useFavoritesStore } from "@/hooks/useFavorite";
+import { useFavoritesStore } from "@/States/useFavoriteState";
 import useBooks from "@/hooks/useBooks";
 import { useState } from "react";
 import {
@@ -20,6 +20,8 @@ function BookList() {
   const [genreFilter, setGenreFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedCard, setSelectedCard] = useState<Book>();
+
+
 
   const filteredBooks = books?.filter((book) => {
     if (genreFilter !== "all" && book.genre !== genreFilter) {
