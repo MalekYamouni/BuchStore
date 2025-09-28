@@ -427,12 +427,33 @@ func (r *BookRepository) RemoveFromCart(userId, bookId int) error {
 
 	defer tx.Rollback()
 
-	query := "Update user_cart SET removed_at = NOW() Where user_id=$1 AND cart_book_id=2$"
+	query := "DELETE FROM user_cart WHERE user_id=$1 AND cart_book_id=$2"
 
-	if _, err := tx.Exec(query, userId, bookId); err != nil {
-		log.Println("Repository Fehler bei RemoveFromCart")
+	res, err := tx.Exec(query, userId, bookId)
+	if err != nil {
+		log.Println("Repository Fehler bei RemoveFromCart", err)
 		return err
 	}
 
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		log.Println("Fehler beim Abfragen der betroffenen Zeilen in RemoveFromCart", err)
+		return err
+	}
+
+	if rowsAffected == 0 {
+		log.Println("RemoveFromCart: kein Eintrag gefunden für user", userId, "book", bookId)
+		if err := tx.Commit(); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Println("Fehler beim Commit in RemoveFromCart", err)
+		return err
+	}
+
+	log.Println("RemoveFromCart: Eintrag entfernt für user", userId, "book", bookId)
 	return nil
 }

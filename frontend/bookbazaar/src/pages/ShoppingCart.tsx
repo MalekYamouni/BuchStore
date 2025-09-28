@@ -38,8 +38,6 @@ function ShoppingCart() {
     }
   }, [serverCart]);
 
-  
-
   const handleBuyAll = async () => {
     const purchases = shoppingCart.map((book) => ({
       bookId: book.id,
@@ -120,12 +118,10 @@ function ShoppingCart() {
             key={book.id}
             book={book}
             onRemove={async (bookId) => {
-              // optimistic local remove
               removeLocal(bookId);
               try {
                 await removeFromCart.mutateAsync(bookId);
               } catch (err) {
-                // rollback
                 addLocal(book);
                 console.error("Fehler beim Entfernen aus Warenkorb:", err);
               }
@@ -136,10 +132,10 @@ function ShoppingCart() {
           />
         ))
       )}
-      <div className="flex justify-center items-center w-5xl pl-5">
+      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-gray-300 max-w-3xl w-full mx-auto hover:underline ">
         {filteredCart.length > 0 && (
-          <Button onClick={handleBuyAll}>
-            <ShoppingBasket className="w-3xl"></ShoppingBasket>
+          <Button className="w-full rounded-4xl" onClick={handleBuyAll}>
+            <ShoppingBasket className="w-full"></ShoppingBasket>
           </Button>
         )}
       </div>

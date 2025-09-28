@@ -56,7 +56,7 @@ export default function useCart(): UseCartReturn {
 
   async function RemoveBookFromCart(bookId: number): Promise<void> {
     const res = await fetch(`${API_URL}/books/cart/${bookId}`, {
-      method: "UPDATE",
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

@@ -37,7 +37,6 @@ function BookCard({
 
   const addLocal = useCartStore((s) => s.addToCart);
   const removeLocal = useCartStore((s) => s.removeFromCart);
-  // queryClient not needed here because useCart handles invalidation
 
   async function handleAdd(book: Book) {
     addLocal(book);
@@ -85,8 +84,6 @@ function BookCard({
       await borrowBookMutation.mutateAsync(bookId);
     } catch (err) {}
   };
-
-  // isOverdue not used currently
 
   const handleGiveBack = async (bookId: number) => {
     try {

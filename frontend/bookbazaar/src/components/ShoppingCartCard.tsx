@@ -24,7 +24,6 @@ function ShoppingCartCard({ book, onRemove, onQtyChange }: ShoppingCartCardProps
   const { updateQuantity, removeFromCart: removeLocal } = useCartStore();
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
 
-  // live countdown based on reservationExpiresAt
   useEffect(() => {
     if (!book.reservationExpiresAt) {
       setRemainingMs(null);
@@ -36,16 +35,19 @@ function ShoppingCartCard({ book, onRemove, onQtyChange }: ShoppingCartCardProps
       return;
     }
 
+    let id: number | undefined;
+    let handled = false;
+
     const update = () => {
       const diff = parsed - Date.now();
       setRemainingMs(diff);
-      if (diff <= 0) {
-        // expired: prefer parent handler, otherwise remove locally
+      if (diff <= 0 && !handled) {
+        handled = true;
+        if (id !== undefined) clearInterval(id);
         if (onRemove) {
           try {
             onRemove(book.id);
           } catch (e) {
-            // best-effort fallback
             removeLocal(book.id);
           }
         } else {
@@ -55,8 +57,10 @@ function ShoppingCartCard({ book, onRemove, onQtyChange }: ShoppingCartCardProps
     };
 
     update();
-    const id = window.setInterval(update, 1000);
-    return () => clearInterval(id);
+    id = window.setInterval(update, 1000);
+    return () => {
+      if (id !== undefined) clearInterval(id);
+    };
   }, [book.reservationExpiresAt, onRemove, removeLocal, book.id]);
 
   function formatRemaining(ms: number) {
@@ -67,7 +71,6 @@ function ShoppingCartCard({ book, onRemove, onQtyChange }: ShoppingCartCardProps
     const s = total % 60;
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   }
-
 
   return (
     <div>
