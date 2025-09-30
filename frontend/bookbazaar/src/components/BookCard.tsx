@@ -35,7 +35,6 @@ function BookCard({
   const { borrowBookMutation, giveBookBack } = useBorrow();
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const { ref, inView } = useInView<HTMLDivElement>();
-  const [expanded, setExpanded] = useState(false);
   const { addToCart } = useCart();
 
   const addLocal = useCartStore((s) => s.addToCart);
@@ -67,8 +66,6 @@ function BookCard({
     return () => clearInterval(id);
   }, [book?.dueAt]);
 
-  // collapse card when book prop changes
-  useEffect(() => setExpanded(false), [book?.id]);
 
   function formatRemainingTime(ms: number) {
     if (ms <= 0) return "Überfällig!";
@@ -100,18 +97,15 @@ function BookCard({
   return (
     <div ref={ref} className={`transform transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
       <Card
-        onClick={() => {
-          setExpanded((s) => !s);
-          onClick(book);
-        }}
-        className={`w-150 ml-5 display-flex justify-center shadow-lg rounded-2xl gap-5 transition-transform duration-300 ${expanded ? "scale-105 ring-4 ring-indigo-200" : "hover:scale-105"} card-tilt cursor-pointer`}
+        onClick={() => onClick(book)}
+        className={`w-150 ml-5 display-flex justify-center shadow-lg rounded-2xl gap-5 transition-transform duration-300 hover:scale-105 card-tilt cursor-pointer`}
       >
       <CardHeader>
         <CardTitle className="text-lg fron-semibold leading-none tracking-tight">
           {book.name}
         </CardTitle>
       </CardHeader>
-      <CardContent className={`grid grid-cols-2 gap-4 ${expanded ? "md:grid-cols-3" : ""}`}>
+  <CardContent className={`grid grid-cols-2 gap-4`}>
         <div className="flex flex-col space-y-2">
           <p>Autor: {book.author}</p>
 
@@ -123,14 +117,9 @@ function BookCard({
 
           <p>Genre: {book.genre}</p>
         </div>
-        <div className={`${expanded ? "col-span-2" : ""}`}>
+        <div>
           <p>Beschreibung...</p>
           <p className=" text-sm text-gray-600">{book.description}</p>
-          {expanded && (
-            <div className="mt-2 text-sm text-slate-700">
-              <p>{book.descriptionLong}</p>
-            </div>
-          )}
         </div>
       </CardContent>
 

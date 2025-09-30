@@ -146,6 +146,13 @@
 }
 .detail-inner { padding-bottom: 2rem; }
 
+/* faded state for detail panel when no selection: reduce contrast and slightly blur */
+.detail-inner.opacity-20 {
+  opacity: 0.35; /* keep it visibly present but muted */
+  filter: blur(2px) contrast(0.9) saturate(0.9);
+  pointer-events: none; /* prevent interactions when faded */
+}
+
 /* Card tilt effect on hover */
 .card-tilt { transform-style: preserve-3d; transition: transform 0.45s cubic-bezier(.2,.8,.2,1); position: relative; overflow: hidden; }
 .card-tilt:hover { transform: perspective(1000px) rotateX(1deg) rotateY(-2deg) translateY(-3px); }
@@ -166,30 +173,9 @@
 }
 
 .card-tilt::after {
-  /* softer purple sheen */
+  /* sheen disabled */
   content: "";
-  position: absolute;
-  top: 0;
-  left: -140%;
-  width: 44%;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(175,140,255,0.52) 50%, rgba(255,255,255,0) 100%);
-  transform: skewX(-18deg);
-  pointer-events: none;
-  opacity: 0;
-  filter: blur(8px);
-  mix-blend-mode: screen;
-}
-
-.card-tilt:hover::after {
-  animation: shine 1400ms cubic-bezier(.22,.9,.25,1) forwards;
-}
-
-@keyframes shine {
-  0% { left: -140%; opacity: 0; }
-  30% { opacity: 0.82; }
-  55% { left: 58%; opacity: 0.9; }
-  100% { left: 160%; opacity: 0; }
+  display: none;
 }
 
 /* sparkle animation intentionally removed to keep the effect refined */
@@ -224,6 +210,51 @@
 /* subtle scrollbar styling to match the panel */
 .detail-panel::-webkit-scrollbar { width: 8px; }
 .detail-panel::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.06); border-radius: 8px; }
+
+
+
+
+/* right-side pill inside SectionHeader for balance/credit with subtle purple glow */
+.section-right-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(107,33,168,0.06), rgba(107,33,168,0.03));
+  box-shadow: 0 6px 18px rgba(107,33,168,0.06), 0 0 18px rgba(107,33,168,0.04);
+  /* make the text much darker for legibility */
+  color: rgba(15, 23, 42, 0.92); /* slate-900 heavy */
+  font-weight: 600;
+}
+
+/* emphasize numeric amount inside the pill */
+.section-right-pill .amount, .section-right-pill .currency {
+  color: rgba(15, 23, 42, 0.98);
+}
+.section-right-pill .amount {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+/* subtle pulsing highlight on hover/focus for the pill */
+.section-right-pill:hover,
+.section-right-pill:focus {
+  box-shadow: 0 10px 30px rgba(107,33,168,0.10), 0 0 30px rgba(107,33,168,0.08);
+  transform: translateY(-1px);
+}
+
+/* Rating stars: progressively richer purple per star (1..5) when active */
+.inline-flex[role="radiogroup"] button svg {
+  color: #94a3b8; /* default muted */
+  stroke: currentColor;
+  fill: none;
+}
+.inline-flex[role="radiogroup"] button:nth-child(1) svg.fill-current { color: rgba(139,92,246,0.25); fill: currentColor; }
+.inline-flex[role="radiogroup"] button:nth-child(2) svg.fill-current { color: rgba(139,92,246,0.4); fill: currentColor; }
+.inline-flex[role="radiogroup"] button:nth-child(3) svg.fill-current { color: rgba(139,92,246,0.6); fill: currentColor; }
+.inline-flex[role="radiogroup"] button:nth-child(4) svg.fill-current { color: rgba(139,92,246,0.8); fill: currentColor; }
+.inline-flex[role="radiogroup"] button:nth-child(5) svg.fill-current { color: rgba(99,102,241,0.95); fill: currentColor; }
 
 
 

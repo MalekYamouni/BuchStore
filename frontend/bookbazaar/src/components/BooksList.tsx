@@ -84,19 +84,24 @@ function BookList() {
           ))}
         </div>
         <aside className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg transition-all duration-500 detail-panel">
-          {selectedCard ? (
-            <div className={`detail-inner transition-transform duration-500 ${selectedCard ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}`}>
-              <SectionHeader title={selectedCard.name} />
-              <p className="mb-3 text-sm text-slate-700">{selectedCard.descriptionLong}</p>
-              <div className="meta text-xs text-gray-500">
-                <div>Autor: {selectedCard.author}</div>
-                <div>Genre: {selectedCard.genre}</div>
-                <div>Preis: {selectedCard.price.toFixed(2)}€</div>
-              </div>
-            </div>
-          ) : (
-            <p className="text-gray-500">Bitte wähle ein Buch, um Details zu sehen.</p>
-          )}
+          <div className={`detail-inner transition-transform duration-500 ${selectedCard ? "opacity-100 translate-x-0" : "opacity-20 blur-sm"}`}>
+            {selectedCard ? (
+              <>
+                <SectionHeader title={selectedCard.name} />
+                <p className="mb-3 text-sm text-slate-700">{selectedCard.descriptionLong}</p>
+                <div className="meta text-xs text-gray-500">
+                  <div>Autor: {selectedCard.author}</div>
+                  <div>Genre: {selectedCard.genre}</div>
+                  <div>Preis: {selectedCard.price.toFixed(2)}€</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <SectionHeader title="Wähle ein Buch" />
+                <p className="mb-3 text-sm text-slate-500">Kein Buch ausgewählt. Wähle links eine Karte aus, um die Details hier zu sehen.</p>
+              </>
+            )}
+          </div>
         </aside>
       </div>
     </div>

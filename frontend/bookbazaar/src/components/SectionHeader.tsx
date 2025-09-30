@@ -44,7 +44,7 @@ export default function SectionHeader({ title, subtitle, right, variant = "defau
         {/* Right slot: pill */}
         {right ? (
           <div className="pr-4">
-            <div className="inline-flex items-center px-3 py-1.5 bg-white shadow-sm rounded-full text-sm font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-100">
+            <div className="section-right-pill inline-flex items-center px-3 py-1.5 bg-white shadow-sm rounded-full text-sm font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-100">
               {right}
             </div>
           </div>
