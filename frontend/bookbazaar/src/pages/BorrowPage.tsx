@@ -23,14 +23,14 @@ function BorrowBooks() {
   const [selectedCard, setSelectedCard] = useState<Book>();
   const { favorites } = useFavoritesStore();
   const { data: books } = useBooks();
-  const {data: getuserById} = useUsers()
+  const {getuserById} = useUsers();
 
   const borrowedBooks = borrowedBooksQuery.data ?? [];
   const availableBooks = books?.filter(
     (book) => !borrowedBooks.some((b) => b.id === book.id)
   );
 
-  const userBalance = getuserById?.balance ;
+  const userBalance = getuserById.data?.balance ?? 0;
 
   const filteredBooks = borrowedBooks.filter((book) => {
     if (genreFilter !== "all" && book.genre !== genreFilter) return false;

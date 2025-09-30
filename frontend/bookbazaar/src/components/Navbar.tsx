@@ -14,11 +14,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
+import { logout } from "@/lib/auth";
+
 
 function NavBar() {
   const location = useLocation();
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
-  const logout = useAuthStore((s) => s.logout);
+  
   const isAdmin = useAuthStore((s) => s.isAdmin());
   return (
     <div>
@@ -94,7 +96,7 @@ function NavBar() {
             <DropdownMenuItem>Einstellungen</DropdownMenuItem>
             {isLoggedIn == true ? (
               <DropdownMenuItem
-                onClick={logout}
+                onClick={() => logout()}
                 className="flex items-center justify-between"
               >
                 Logout<LogOut></LogOut>

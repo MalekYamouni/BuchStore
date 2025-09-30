@@ -8,8 +8,14 @@ import AddBookPage from "./pages/AddBookPage";
 import UserLogin from "./pages/UserLogin";
 import ProtectedRoute from "./States/protectedRoute";
 import BorrowBooks from "./pages/BorrowPage";
+import { useEffect } from "react";
+import { tryAutoLogin } from "./lib/auth";
 
 function App() {
+  useEffect(() => {
+  tryAutoLogin();
+}, []);
+
   return (
     <BrowserRouter>
       <NavBar />

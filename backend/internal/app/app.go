@@ -60,6 +60,8 @@ func Run() {
 		api.POST("/books/buyBooks", authMiddleware, bookController.BuyBooks)
 		api.PUT("/books/:id/giveBookBack", authMiddleware, bookController.GiveBorrowedBookBack)
 		api.POST("/login", authController.Login)
+		api.POST("/refresh", authController.Refresh)
+		api.POST("/logout", authController.Logout)
 		api.POST("/books", authMiddleware, authAdminOnly, bookController.AddBooks)
 		api.DELETE("/books/:id", authMiddleware, authAdminOnly, bookController.DeleteBooks)
 		api.GET("/books/cart", authMiddleware, bookController.GetCartBooks)

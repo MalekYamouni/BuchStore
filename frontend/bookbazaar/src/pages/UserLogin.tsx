@@ -9,9 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/States/userAuthState";
 import useUsers from "@/hooks/useUser";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { tryAutoLogin } from "@/lib/auth";
 
 export interface UserRegistration {
   name: string;
@@ -27,11 +28,18 @@ export interface UserLogin {
 }
 
 function UserLogin() {
-  const { isLoading, error, addNewUser } = useUsers();
+  const { addNewUser } = useUsers();
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const [loginError, setLoginError] = useState({ username: "", password: "" });
+
+  // Beim Mount versuchen, automatisch einzuloggen
+  useEffect(() => {
+    tryAutoLogin().then((ok) => {
+      if (ok) navigate("/home"); // User bleibt eingeloggt
+    });
+  }, []);
 
   const {
     register: registerRegisterForm,
@@ -54,7 +62,6 @@ function UserLogin() {
       password: data.password,
     };
 
-    console.log(JSON.stringify(newUser, null, 2));
     setShowRegister(false);
     addNewUser.mutate(newUser);
   };
@@ -64,6 +71,7 @@ function UserLogin() {
       const res = await fetch("http://localhost:8080/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // HttpOnly Cookie wird gesendet
         body: JSON.stringify({
           username: data.username,
           password: data.password,
@@ -75,8 +83,9 @@ function UserLogin() {
         setLoginError({ username: errorData.error, password: "" });
         return;
       }
+
       const responseData = await res.json();
-      const token = responseData.token;
+      const token = responseData.access_token;
       const userId = responseData.userId;
       const role = responseData.role;
 
@@ -85,9 +94,7 @@ function UserLogin() {
         return;
       }
 
-      login(token, userId, role);
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userId", String(userId));
+      login(token, userId, role); // Zustand wird gesetzt
       navigate("/home");
     } catch (err) {
       console.error("Login-Fehler", err);
@@ -95,96 +102,22 @@ function UserLogin() {
     }
   };
 
-  if (isLoading) return <p>Lade Benutzer</p>;
-  if (error) return <p>Fehler: {error.message}</p>;
+
   if (showRegister) {
     return (
       <div className="flex p-40 justify-center min-h-screen bg-gray-100">
-        <Card
-          className="w-120 h-150 ml-5 display-flex justify-center
-     shadow-lg rounded-2xl hover:scale-105 transition-transform duration-300 gap-5"
-        >
+        <Card className="w-120 h-150 shadow-lg rounded-2xl hover:scale-105 transition-transform duration-300 gap-5">
           <CardHeader>
-            <CardTitle className="text-lg fron-semibold leading-none tracking-tight">
-              Registrieren
-            </CardTitle>
+            <CardTitle className="text-lg font-semibold">Registrieren</CardTitle>
           </CardHeader>
           <form onSubmit={handleRegisterSubmit(onSubmitRegistration)}>
             <CardContent>
               <div className="space-y-4">
-                <Input
-                  {...registerRegisterForm("name", {
-                    required: "Vorname ist Pflicht",
-                    minLength: { value: 3, message: "Mindestens 3 Zeichen" },
-                  })}
-                  placeholder="Vorname"
-                  type="text"
-                ></Input>
-                {registerErrors.name && (
-                  <p className="text-red-500 text-sm">
-                    {registerErrors.name.message}
-                  </p>
-                )}
-                <Input
-                  {...registerRegisterForm("lastname", {
-                    required: "Nachname ist Pflicht",
-                    minLength: { value: 3, message: "Mindestens 3 Zeichen" },
-                  })}
-                  type="text"
-                  placeholder="Nachname"
-                ></Input>
-                {registerErrors.lastname && (
-                  <p className="text-red-500 text-sm">
-                    {registerErrors.lastname.message}
-                  </p>
-                )}
-                <Input
-                  {...registerRegisterForm("email", {
-                    required: "E-Mail ist Pflicht",
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "Ungültige E-Mail",
-                    },
-                  })}
-                  type="email"
-                  placeholder="Email"
-                ></Input>
-                {registerErrors.email && (
-                  <p className="text-red-500 text-sm">
-                    {registerErrors.email.message}
-                  </p>
-                )}
-                <Input
-                  {...registerRegisterForm("username", {
-                    required: "Username ist Pflicht",
-                    minLength: { value: 3, message: "Mindestens 3 Zeichen" },
-                  })}
-                  type="text"
-                  placeholder="Username"
-                ></Input>
-                {registerErrors.username && (
-                  <p className="text-red-500 text-sm">
-                    {registerErrors.username.message}
-                  </p>
-                )}
-                <Input
-                  {...registerRegisterForm("password", {
-                    required: "Passwort ist Pflicht",
-                    minLength: { value: 6, message: "Mindestens 6 Zeichen" },
-                    pattern: {
-                      value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$/,
-                      message:
-                        "Passwort muss mindestens 6 Zeichen, 1 Großbuchstabe und 1 Zahl enthalten",
-                    },
-                  })}
-                  type="password"
-                  placeholder="Passwort"
-                ></Input>
-                {registerErrors.password && (
-                  <p className="text-red-500 text-sm">
-                    {registerErrors.password.message}
-                  </p>
-                )}
+                <Input {...registerRegisterForm("name", { required: true })} placeholder="Vorname" />
+                <Input {...registerRegisterForm("lastname", { required: true })} placeholder="Nachname" />
+                <Input {...registerRegisterForm("email", { required: true })} placeholder="Email" type="email" />
+                <Input {...registerRegisterForm("username", { required: true })} placeholder="Username" />
+                <Input {...registerRegisterForm("password", { required: true })} placeholder="Passwort" type="password" />
               </div>
             </CardContent>
             <CardFooter className="flex justify-start gap-3 pt-3">
@@ -199,48 +132,17 @@ function UserLogin() {
 
   return (
     <div className="flex p-40 justify-center min-h-screen bg-gray-100">
-      <Card
-        className="w-120 h-70 ml-5 display-flex justify-center
-     shadow-lg rounded-2xl hover:scale-105 transition-transform duration-300 gap-5"
-      >
+      <Card className="w-120 h-70 shadow-lg rounded-2xl hover:scale-105 transition-transform duration-300 gap-5">
         <CardHeader>
-          <CardTitle className="text-lg fron-semibold leading-none tracking-tight">
-            Anmeldung
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">Anmeldung</CardTitle>
         </CardHeader>
         <form onSubmit={handleLoginSubmit(onSubmitLogin)}>
           <CardContent>
-            <div className="flext flex-col space-y-4">
-              <Input
-                placeholder="Username"
-                {...registerLoginForm("username", {
-                  required: "Username bitte eingeben",
-                })}
-              />
-              {loginErrors.username && (
-                <p className="text-red-500 text-sm">
-                  {loginErrors.username.message}
-                </p>
-              )}
-              {loginError && (
-                <p className="text-red-500">{loginError.username}</p>
-              )}
-
-              <Input
-                placeholder="Passwort"
-                type="password"
-                {...registerLoginForm("password", {
-                  required: "Passwort bitte eingeben",
-                })}
-              />
-              {loginErrors.password && (
-                <p className="text-red-500 text-sm">
-                  {loginErrors.password.message}
-                </p>
-              )}
-              {loginError && (
-                <p className="text-red-500">{loginError.password}</p>
-              )}
+            <div className="flex flex-col space-y-4">
+              <Input placeholder="Username" {...registerLoginForm("username", { required: true })} />
+              {loginError.username && <p className="text-red-500">{loginError.username}</p>}
+              <Input placeholder="Passwort" type="password" {...registerLoginForm("password", { required: true })} />
+              {loginError.password && <p className="text-red-500">{loginError.password}</p>}
             </div>
           </CardContent>
           <CardFooter className="flex justify-start gap-3 pt-3">

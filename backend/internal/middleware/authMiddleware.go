@@ -40,7 +40,7 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 
 		role, ok := claims["role"].(string)
 		if !ok {
-			role = "user" // Standardrolle
+			role = "user"
 		}
 
 		ctx.Set("user", models.User{ID: int(userIdFloat), Role: role})

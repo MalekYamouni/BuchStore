@@ -3,9 +3,12 @@ package services
 import (
 	"bookbazaar-backend/internal/models"
 	"bookbazaar-backend/internal/repository"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"log"
 	"net/mail"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -15,6 +18,14 @@ type UserService interface {
 	AddUser(user *models.User) (*models.User, error)
 	ValidateUser(username, password string) (*models.User, error)
 	GetUserByUserId(userId int) (*models.User, error)
+	StoreRefreshToken(userID int, token string) error
+	ValidateRefreshToken(token string) (int, error)
+	RevokeRefreshToken(token string) error
+}
+
+func hashToken(token string) string {
+	sum := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(sum[:])
 }
 
 type DefaultUserService struct {
@@ -96,4 +107,29 @@ func (s *DefaultUserService) GetUserByUserId(userId int) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+// StoreRefreshToken speichert einen neu erzeugten refresh token (hashed) in der DB.
+func (s *DefaultUserService) StoreRefreshToken(userID int, token string) error {
+	hash := hashToken(token)
+	expires := time.Now().Add(30 * 24 * time.Hour) // 30 Tage
+	return s.repo.CreateRefreshToken(userID, hash, expires)
+}
+
+// ValidateRefreshToken validiert den refresh token und gibt die zugehörige user_id zurück.
+func (s *DefaultUserService) ValidateRefreshToken(token string) (int, error) {
+	hash := hashToken(token)
+	userID, err := s.repo.GetUserIDByRefreshToken(hash)
+	if err != nil {
+		return 0, err
+	}
+	// optional: last_used_at updaten
+	_ = s.repo.UpdateRefreshTokenLastUsed(hash)
+	return userID, nil
+}
+
+// RevokeRefreshToken markiert einen refresh token als revoked.
+func (s *DefaultUserService) RevokeRefreshToken(token string) error {
+	hash := hashToken(token)
+	return s.repo.RevokeRefreshToken(hash)
 }

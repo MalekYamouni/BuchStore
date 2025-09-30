@@ -4,6 +4,7 @@ import (
 	"bookbazaar-backend/internal/models"
 	"database/sql"
 	"log"
+	"time"
 )
 
 type UserRepository struct {
@@ -89,4 +90,45 @@ func (r *UserRepository) AddUser(user *models.User) error {
 	}
 	log.Print("Neuer User", user.Name)
 	return nil
+}
+
+func (r *UserRepository) CreateRefreshToken(userID int, tokenHash string, expiresAt time.Time) error {
+	_, err := r.db.Exec(`
+		INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
+		VALUES ($1, $2, $3)
+	`, userID, tokenHash, expiresAt)
+	return err
+}
+
+func (r *UserRepository) GetUserIDByRefreshToken(tokenHash string) (int, error) {
+	var userID int
+	err := r.db.QueryRow(`
+		SELECT user_id
+		FROM refresh_tokens
+		WHERE token_hash = $1
+		  AND revoked = false
+		  AND expires_at > now()
+	`, tokenHash).Scan(&userID)
+	if err != nil {
+		return 0, err
+	}
+	return userID, nil
+}
+
+func (r *UserRepository) RevokeRefreshToken(tokenHash string) error {
+	_, err := r.db.Exec(`
+		UPDATE refresh_tokens
+		SET revoked = true
+		WHERE token_hash = $1
+	`, tokenHash)
+	return err
+}
+
+func (r *UserRepository) UpdateRefreshTokenLastUsed(tokenHash string) error {
+	_, err := r.db.Exec(`
+		UPDATE refresh_tokens
+		SET last_used_at = now()
+		WHERE token_hash = $1
+	`, tokenHash)
+	return err
 }
