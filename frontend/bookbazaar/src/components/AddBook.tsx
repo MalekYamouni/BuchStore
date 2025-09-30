@@ -12,6 +12,7 @@ import {
 } from "./ui/select";
 import { useState } from "react";
 import { useAuthStore } from "@/States/userAuthState";
+import SectionHeader from "./SectionHeader";
 
 interface NewBook {
   name: string;
@@ -70,74 +71,58 @@ function AddBook() {
     );
   }
   return (
-    <div className="bg-[#333] flex flex-col items-center justify-items-start min-h-screen ">
-      <form
-        className="bg-gray-200 p-6 rounded-xl shadow-lg flex flex-col gap-4 w-full max-w-md brd mt-50"
-        onSubmit={handleNewBookSubmit(onNewBookSubmit)}
-      >
-        <Input
-          {...registerNewBook("name", {
-            required: "Name ist Pflicht",
-            minLength: { value: 3, message: "Mindestens 3 Zeichen" },
-          })}
-          type="text"
-          placeholder="Name"
-          className="border border-gray-500"
-        />
+    <div className="min-h-screen p-6 bg-background">
+      <div className="max-w-4xl mx-auto">
+        <SectionHeader title="Buch hinzufügen" subtitle="Fülle die Felder aus, um ein neues Buch zur Bibliothek hinzuzufügen." />
+
+        <div className="mt-4 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-md p-6">
+          <form className="flex flex-col gap-4" onSubmit={handleNewBookSubmit(onNewBookSubmit)}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                {...registerNewBook("name", { required: "Name ist Pflicht", minLength: { value: 3, message: "Mindestens 3 Zeichen" } })}
+                type="text"
+                placeholder="Titel"
+                className="w-full"
+              />
         {newBookErrors.name && (
           <p className="text-red-500 text-sm">{newBookErrors.name.message}</p>
         )}
-        <Input
-          {...registerNewBook("author", {
-            required: "Autor ist Pflicht",
-            minLength: { value: 3, message: "Mindestens 3 Zeichen" },
-          })}
-          type="text"
-          placeholder="Autor"
-          className="border border-gray-500"
-        />
+              <Input
+                {...registerNewBook("author", { required: "Autor ist Pflicht", minLength: { value: 3, message: "Mindestens 3 Zeichen" } })}
+                type="text"
+                placeholder="Autor"
+                className="w-full"
+              />
         {newBookErrors.author && (
           <p className="text-red-500 text-sm">{newBookErrors.author.message}</p>
         )}
-        <Input
-          {...registerNewBook("price", {
-            required: "Preis ist Pflicht",
-            valueAsNumber: true,
-            min: {
-              value: 0.01,
-              message: "Preis muss größer als 0.00 € sein",
-            },
-          })}
-          placeholder="Preis"
-          type="number"
-          className="border border-gray-500"
-          step={0.01}
-          min="0"
-        />
+              <Input
+                {...registerNewBook("price", { required: "Preis ist Pflicht", valueAsNumber: true, min: { value: 0.01, message: "Preis muss größer als 0.00 € sein" } })}
+                placeholder="Preis (€)"
+                type="number"
+                className="w-full"
+                step={0.01}
+                min="0"
+              />
         {newBookErrors.price && (
           <p className="text-red-500 text-sm">{newBookErrors.price.message}</p>
         )}
-        <Input
-          {...registerNewBook("borrowPrice", {
-            required: "Leihpreis ist Pflicht",
-            valueAsNumber: true,
-            min: {
-              value: 0.01,
-              message: "Preis muss größer als 0.00 € sein",
-            },
-          })}
-          placeholder="Leihpreis"
-          type="number"
-          className="border border-gray-500"
-          step={0.01}
-          min="0"
-        />
+              <Input
+                {...registerNewBook("borrowPrice", { required: "Leihpreis ist Pflicht", valueAsNumber: true, min: { value: 0.01, message: "Preis muss größer als 0.00 € sein" } })}
+                placeholder="Leihpreis (€)"
+                type="number"
+                className="w-full"
+                step={0.01}
+                min="0"
+              />
         {newBookErrors.borrowPrice && (
           <p className="text-red-500 text-sm">
             {newBookErrors.borrowPrice.message}
           </p>
         )}
-        <Controller
+            </div>
+
+            <Controller
           control={control}
           name="genre"
           rules={{ required: "Genre ist Pflicht" }}
@@ -146,7 +131,7 @@ function AddBook() {
               onValueChange={(value) => field.onChange(value)}
               value={field.value || ""}
             >
-              <SelectTrigger className="w-full border border-gray-500">
+                  <SelectTrigger className="w-full">
                 <SelectValue placeholder="Genre auswählen" />
               </SelectTrigger>
               <SelectContent>
@@ -161,39 +146,39 @@ function AddBook() {
         {newBookErrors.genre && (
           <p className="text-red-500 text-sm">{newBookErrors.genre.message}</p>
         )}
-        <Input
-          {...registerNewBook("description", {
-            required: "Beschreibung ist Pflicht",
-            minLength: { value: 3, message: "Mindestens 3 Zeichen" },
-          })}
-          placeholder="Kurzbeschreibung"
-          type="text"
-          className="border h-25 border-gray-500"
-        />
+            <Input
+              {...registerNewBook("description", { required: "Beschreibung ist Pflicht", minLength: { value: 3, message: "Mindestens 3 Zeichen" } })}
+              placeholder="Kurzbeschreibung"
+              type="text"
+              className="w-full"
+            />
         {newBookErrors.description && (
           <p className="text-red-500 text-sm">
             {newBookErrors.description.message}
           </p>
         )}
-        <Input
-          {...registerNewBook("descriptionLong", {
-            required: "Beschreibung ist Pflicht",
-            minLength: { value: 3, message: "Mindestens 3 Zeichen" },
-          })}
-          placeholder="Beschreibung"
-          type="text"
-          className="border h-50 border-gray-500"
-        />
+            <Input
+              {...registerNewBook("descriptionLong", { required: "Beschreibung ist Pflicht", minLength: { value: 3, message: "Mindestens 3 Zeichen" } })}
+              placeholder="Ausführliche Beschreibung"
+              type="text"
+              className="w-full h-32"
+            />
         {newBookErrors.descriptionLong && (
           <p className="text-red-500 text-sm">
             {newBookErrors.descriptionLong.message}
           </p>
         )}
-        <Button type="submit">Buch hinzufügen 📘</Button>
-        {errorMessage && (
-          <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
-        )}
-      </form>
+            <div className="flex items-center justify-between gap-4 mt-4">
+              <div />
+              <div className="flex items-center gap-3">
+                <Button type="submit">Buch hinzufügen</Button>
+              </div>
+            </div>
+
+            {errorMessage && <p className="text-red-500 text-sm font-medium mt-2">{errorMessage}</p>}
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

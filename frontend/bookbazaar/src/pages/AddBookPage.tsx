@@ -1,10 +1,9 @@
 import AddBook from "../components/AddBook";
 
 function AddBookPage() {
-
   return (
-    <div>
-      <AddBook/>
+    <div className="min-h-screen bg-background p-6">
+      <AddBook />
     </div>
   );
 }
