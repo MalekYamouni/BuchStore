@@ -15,6 +15,7 @@ import type { Book } from "@/interface/Book";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { CreditCard, LibrarySquare } from "lucide-react";
 import { useEffect, useState } from "react";
+import SectionHeader from "@/components/SectionHeader";
 
 function BorrowBooks() {
   const { borrowedBooksQuery } = useBorrow();
@@ -90,9 +91,9 @@ function BorrowBooks() {
       </div>
       <div className="flex gap-10">
         <div className="flex-1 flex flex-col gap-3">
-          <h2 className="text-2xl font-bold ml-5 bg-gray-200 pl-6 rounded-br-full rounded-bl-md">
-            Geliehen
-          </h2>
+          <div className="ml-5">
+            <SectionHeader title="Geliehen" />
+          </div>
           {filteredBooks?.map((book) => (
             <BookCard
               key={book.id}
@@ -107,9 +108,9 @@ function BorrowBooks() {
           ))}
         </div>
         <div className="flex-1 flex flex-col gap-3">
-          <h2 className="text-2xl font-bold ml-5 bg-gray-200 pl-6 rounded-br-full">
-            Verfügbar
-          </h2>
+          <div className="ml-5">
+            <SectionHeader title="Verfügbar" />
+          </div>
           {availableBooks?.map((borrowBook) => (
             <BookCard
               key={borrowBook.id}
@@ -125,7 +126,7 @@ function BorrowBooks() {
         </div>
         <div>
         </div>
-        <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg">
+  <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg detail-panel">
           {selectedCard ? (
             <div>
               <h2 className="text-3xl mb-2">{selectedCard.name}</h2>

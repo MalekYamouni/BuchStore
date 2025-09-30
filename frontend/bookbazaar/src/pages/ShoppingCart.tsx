@@ -3,7 +3,7 @@ import ShoppingCartCard from "../components/ShoppingCartCard";
 import "../styles/totalPrice.css";
 import { useCartStore } from "@/States/useCartState";
 import { Label } from "@radix-ui/react-label";
-import { CreditCard, GlassesIcon, ShoppingBasket } from "lucide-react";
+import { GlassesIcon, ShoppingBasket } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import useUsers from "@/hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import useCart from "@/hooks/useCart";
+import SectionHeader from "@/components/SectionHeader";
 
 function ShoppingCart() {
   const [filter, setFilter] = useState("all");
@@ -79,13 +80,12 @@ function ShoppingCart() {
   if(error) return <div>Fehler beim Laden des Warenkorbs...</div>
   return (
     <div className="flex flex-col gap-5 p-5">
-      <Label className="text-5xl m-5 flex items-center gap-3">
-        <ShoppingBasket size={36}></ShoppingBasket>Warenkorb
-      </Label>
-      <Label className="text-2xl m-5 flex items-center gap-3">
-        <CreditCard className="inlineblock"></CreditCard>{" "}
-        <span>Guthaben : {userBalance} €</span>
-      </Label>
+      <SectionHeader
+        title="Warenkorb"
+        variant="cart"
+        icon={<ShoppingBasket size={20} />}
+        right={<span>Guthaben: {userBalance ?? 0} €</span>}
+      />
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-40">
@@ -105,9 +105,11 @@ function ShoppingCart() {
           className="w-60"
         ></Input>
       </div>
-      <h2 className="text-2xl font-bold ml-5 bg-gray-200 pl-6 rounded-br-full">
-        Ihre Artikel
-      </h2>
+      <div className="ml-5">
+        <div className="w-120">
+          <SectionHeader title="Ihre Artikel" />
+        </div>
+      </div>
       {filteredCart.length === 0 ? (
         <Label className="text-2xl m-5 flex items-center gap-3">
           Keine Artikel hinzugefügt

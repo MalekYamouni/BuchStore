@@ -4,6 +4,7 @@ import { LibraryBig } from "lucide-react";
 import { useFavoritesStore } from "@/States/useFavoriteState";
 import useBooks from "@/hooks/useBooks";
 import { useState } from "react";
+import SectionHeader from "./SectionHeader";
 import {
   SelectContent,
   SelectItem,
@@ -50,10 +51,11 @@ function BookList() {
             <SelectValue placeholder="Filter auswählen" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Alle Favoriten</SelectItem>
+            <SelectItem value="all">Alle</SelectItem>
             <SelectItem value="Romance">Romance</SelectItem>
             <SelectItem value="Action">Action</SelectItem>
             <SelectItem value="Thriller">Thriller</SelectItem>
+            <SelectItem value="Fantasy">Fantasy</SelectItem>
           </SelectContent>
         </Select>
         <Input
@@ -61,13 +63,13 @@ function BookList() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-60"
-        ></Input>
+        />
       </div>
       <div className="flex gap-10">
-        <div className="flex-1 flex flex-col gap-3">
-          <h2 className="text-2xl font-bold ml-5 bg-gray-200 pl-6 rounded-br-full">
-            Auswahl
-          </h2>
+        <div className="flex-1 flex flex-col gap-3 list-column">
+          <div className="ml-5">
+            <SectionHeader title="Auswahl" />
+          </div>
           {filteredBooks?.map((book) => (
             <BookCard
               key={book.id}
@@ -81,16 +83,21 @@ function BookList() {
             />
           ))}
         </div>
-        <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg">
+        <aside className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg transition-all duration-500 detail-panel">
           {selectedCard ? (
-            <div>
+            <div className={`detail-inner transition-transform duration-500 ${selectedCard ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}`}>
               <h2 className="text-3xl mb-2">{selectedCard.name}</h2>
-              <p>{selectedCard.descriptionLong}</p>
+              <p className="mb-3 text-sm text-slate-700">{selectedCard.descriptionLong}</p>
+              <div className="meta text-xs text-gray-500">
+                <div>Autor: {selectedCard.author}</div>
+                <div>Genre: {selectedCard.genre}</div>
+                <div>Preis: {selectedCard.price.toFixed(2)}€</div>
+              </div>
             </div>
           ) : (
-            <p>Bitte wähle ein Buch, um Details zu sehen.</p>
+            <p className="text-gray-500">Bitte wähle ein Buch, um Details zu sehen.</p>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   );

@@ -92,3 +92,80 @@
   display: flex;
 }
 
+/* reveal on scroll */
+.opacity-0 { opacity: 0; }
+.opacity-100 { opacity: 1; }
+.translate-y-6 { transform: translateY(1.5rem); }
+.translate-y-0 { transform: translateY(0); }
+
+/* subtle focus ring when expanded */
+.ring-4 { box-shadow: 0 0 0 4px rgba(99,102,241,0.18); }
+
+/* Section header styles */
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(90deg, rgba(99,102,241,0.12), rgba(99,102,241,0.04));
+  display: inline-block;
+  border-radius: 9999px;
+}
+.section-sub {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Sticky detail panel */
+.detail-panel {
+  position: sticky;
+  top: 1.5rem;
+  height: calc(100vh - 3rem);
+  overflow: auto;
+}
+.detail-inner { padding-bottom: 2rem; }
+
+/* Card tilt effect on hover */
+.card-tilt { transform-style: preserve-3d; transition: transform 0.45s cubic-bezier(.2,.8,.2,1); }
+.card-tilt:hover { transform: perspective(1000px) rotateX(2deg) rotateY(-4deg) translateY(-6px); }
+
+/* subtle shadow on hover for modern feel */
+.card-tilt:hover { box-shadow: 0 12px 30px rgba(2,6,23,0.12); }
+
+/* Elegant styling for the right-hand description panel */
+.detail-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 1.25rem;
+  border-radius: 12px;
+  color: #0f172a; /* slate-900 */
+}
+.detail-panel .detail-inner h2,
+.detail-panel h2 {
+  color: #0b1220; /* slightly deeper than slate-900 */
+  letter-spacing: -0.01em;
+}
+.detail-panel p {
+  color: #334155; /* slate-700 */
+  line-height: 1.6;
+}
+.detail-panel .meta {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.detail-panel .meta div {
+  color: #64748b; /* slate-500 */
+}
+
+/* subtle scrollbar styling to match the panel */
+.detail-panel::-webkit-scrollbar { width: 8px; }
+.detail-panel::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.06); border-radius: 8px; }
+
+
+

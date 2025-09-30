@@ -3,6 +3,7 @@ import BookCard from "./BookCard";
 import { BookHeart } from "lucide-react";
 import { useFavoritesStore } from "@/States/useFavoriteState";
 import { useState } from "react";
+import SectionHeader from "./SectionHeader";
 import {
   Select,
   SelectContent,
@@ -64,9 +65,9 @@ function FavoriteList() {
       </div>
       <div className="flex gap-10">
         <div className="flex-1 flex flex-col gap-3">
-          <h2 className="text-2xl font-bold ml-5 bg-gray-200 pl-6 rounded-br-full">
-            Ihre Favoriten
-          </h2>
+          <div className="ml-5">
+            <SectionHeader title="Ihre Favoriten" />
+          </div>
           {filteredFavorites.length === 0 ? (
             <Label className="text-2xl m-5 flex items-center gap-3">
               Keine Favoriten hinzugefügt
@@ -86,7 +87,7 @@ function FavoriteList() {
             ))
           )}
         </div>
-        <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg">
+  <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg detail-panel">
           {selectedCard ? (
             <div>
               <h2 className="text-3xl mb-2">{selectedCard.name}</h2>
