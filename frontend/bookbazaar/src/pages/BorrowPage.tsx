@@ -12,8 +12,7 @@ import useBorrow from "@/hooks/useBorrow";
 import { useFavoritesStore } from "@/States/useFavoriteState";
 import useUsers from "@/hooks/useUser";
 import type { Book } from "@/interface/Book";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { CreditCard, LibrarySquare } from "lucide-react";
+import { LibrarySquare } from "lucide-react";
 import { useEffect, useState } from "react";
 import SectionHeader from "@/components/SectionHeader";
 
@@ -64,12 +63,9 @@ function BorrowBooks() {
   
   return (
     <div className="flex flex-col gap-5 p-5">
-      <Label className="text-5xl m-5 flex items-center gap-3">
-        <LibrarySquare size={36}></LibrarySquare>Verleih
-      </Label>
-      <Label className="text-2xl m-5 flex items-center gap-3">
-        <CreditCard className="inlineblock"></CreditCard> <span>Guthaben : {userBalance} €</span>
-      </Label>
+      <div className="ml-5 mr-5">
+        <SectionHeader title="Verleih" icon={<LibrarySquare size={20} />} right={<span>Guthaben : {userBalance} €</span>} variant="cart" />
+      </div>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={genreFilter} onValueChange={setGenreFilter}>
           <SelectTrigger className="w-40">
@@ -129,7 +125,7 @@ function BorrowBooks() {
   <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg detail-panel">
           {selectedCard ? (
             <div>
-              <h2 className="text-3xl mb-2">{selectedCard.name}</h2>
+              <SectionHeader title={selectedCard.name} />
               <p>{selectedCard.descriptionLong}</p>
             </div>
           ) : (

@@ -16,6 +16,11 @@
   transform: scale(1.03);
 }
 
+/* subtle purple aura on hover for the whole card */
+.card:hover {
+  box-shadow: 0 6px 18px rgba(107,33,168,0.06);
+}
+
 .title {
   color: #666;
   font-size: 18px;
@@ -78,6 +83,18 @@
   transform: scale(1.2);
 }
 
+/* stronger purple glow for interactive controls */
+.favButton:hover, .deleteButton:hover, .addToCart:hover, .removeFromCart:hover, .changeQuantity:hover, .button-group button:hover, .button-group-cart button:hover {
+  box-shadow: 0 6px 18px rgba(107,33,168,0.10), 0 0 24px rgba(107,33,168,0.06);
+}
+
+/* inputs: subtle purple focus */
+.input:focus, input:focus, .search-input:focus {
+  box-shadow: 0 6px 18px rgba(107,33,168,0.06);
+  border-color: var(--subtle-purple-solid);
+  outline: none;
+}
+
 .button-group-cart{
   display: flex;
   gap: 8px;
@@ -133,8 +150,8 @@
 .card-tilt { transform-style: preserve-3d; transition: transform 0.45s cubic-bezier(.2,.8,.2,1); position: relative; overflow: hidden; }
 .card-tilt:hover { transform: perspective(1000px) rotateX(1deg) rotateY(-2deg) translateY(-3px); }
 
-/* subtle shadow on hover for modern feel (slightly softened) */
-.card-tilt:hover { box-shadow: 0 8px 20px rgba(2,6,23,0.10); }
+/* subtle shadow + purple glow on hover for a gentle glowy accent */
+.card-tilt:hover { box-shadow: 0 8px 20px rgba(2,6,23,0.10), 0 0 30px var(--subtle-purple-strong); filter: drop-shadow(0 6px 18px rgba(107,33,168,0.06)); }
 
 /* Gold sheen animation */
 .card-tilt::before {

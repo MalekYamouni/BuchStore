@@ -22,5 +22,17 @@ nav a.active{
 
 nav a:hover {
   color: #fff;
-  transform: scale(1.1);
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(107,33,168,0.06);
+}
+
+/* ensure dropdown menus render above header/section bars */
+.dropdown-over {
+  position: relative; /* Radix dropdown uses absolute internally; this ensures stacking context */
+  z-index: 9999 !important;
+}
+
+/* nav active stronger purple tint */
+nav a.active{
+  box-shadow: inset 0 -5px 0 rgba(107,33,168,0.08);
 }

@@ -1,5 +1,5 @@
 import BookCard from "./BookCard";
-import { Label } from "./ui/label";
+import { /*Label*/ } from "./ui/label";
 import { LibraryBig } from "lucide-react";
 import { useFavoritesStore } from "@/States/useFavoriteState";
 import useBooks from "@/hooks/useBooks";
@@ -42,9 +42,9 @@ function BookList() {
 
   return (
     <div className="flex flex-col gap-5 p-5">
-      <Label className="text-5xl m-5 flex items-center gap-3">
-        <LibraryBig size={36}></LibraryBig>Bücherliste
-      </Label>
+      <div className="ml-5 mr-5">
+        <SectionHeader title="Bücherliste" icon={<LibraryBig size={20} />} variant="cart" />
+      </div>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={genreFilter} onValueChange={setGenreFilter}>
           <SelectTrigger className="w-40">
@@ -86,7 +86,7 @@ function BookList() {
         <aside className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg transition-all duration-500 detail-panel">
           {selectedCard ? (
             <div className={`detail-inner transition-transform duration-500 ${selectedCard ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}`}>
-              <h2 className="text-3xl mb-2">{selectedCard.name}</h2>
+              <SectionHeader title={selectedCard.name} />
               <p className="mb-3 text-sm text-slate-700">{selectedCard.descriptionLong}</p>
               <div className="meta text-xs text-gray-500">
                 <div>Autor: {selectedCard.author}</div>

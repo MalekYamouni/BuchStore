@@ -28,13 +28,13 @@ export default function SectionHeader({ title, subtitle, right, variant = "defau
       <div
         className={`relative w-full flex items-center bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-2xl shadow-md overflow-hidden dark:bg-slate-800/70 dark:border-slate-700/40 transform transition-all duration-500 ${containerAnim}`}
       >
-        {/* Accent bar */}
-        <div className="h-full w-2 bg-gradient-to-b from-indigo-600 via-indigo-500 to-purple-500" />
+  {/* Accent bar */}
+  <div className="h-full w-2 section-accent" />
 
         {/* Title area (cart variant uses icon) */}
         <div className={`flex-1 px-6 py-4 flex items-center gap-4 ${variant === "cart" ? "py-3" : "py-4"}`}>
           {variant === "cart" && icon ? (
-            <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm dark:bg-slate-700">
+            <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm dark:bg-slate-700" style={{ boxShadow: 'inset 0 0 0 2px var(--subtle-purple-ghost)' }}>
               {icon}
             </div>
           ) : null}

@@ -88,7 +88,7 @@ function NavBar() {
               <UserRound></UserRound>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-60 h-50 p-3 bg-white shadow-md rounded flex flex-col gap-2">
+          <DropdownMenuContent className="w-60 h-50 p-3 bg-white shadow-md rounded flex flex-col gap-2 dropdown-over">
             <DropdownMenuLabel className="bg-gray-200">
               Mein Konto
             </DropdownMenuLabel>

@@ -76,6 +76,13 @@
   --sidebar-ring: rgba(79,70,229,0.12);
 }
 
+/* subtle purple accent variables (very light usage) */
+:root, .dark {
+  --subtle-purple-strong: rgba(107,33,168,0.12); /* slightly stronger for small accents */
+  --subtle-purple-ghost: rgba(107,33,168,0.06); /* very faint backgrounds */
+  --subtle-purple-solid: #6b21a8; /* for tiny elements like icons if needed */
+}
+
 .dark {
   --background: #071025; /* dark navy */
   --foreground: #e6eef8; /* soft white */
@@ -116,5 +123,17 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* subtle accent usage */
+  .section-accent {
+    /* vertical accent bar used inside SectionHeader */
+    background: linear-gradient(180deg, var(--subtle-purple-strong), var(--subtle-purple-ghost));
+  }
+
+  /* active nav link underline softened to purple tint */
+  nav a.active {
+    box-shadow: inset 0 -4px 0 var(--subtle-purple-ghost);
+    text-decoration: none; /* keep it subtle */
   }
 }

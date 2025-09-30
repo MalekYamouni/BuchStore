@@ -1,4 +1,4 @@
-import { Label } from "@radix-ui/react-label";
+// Label removed in favor of SectionHeader for consistent headers
 import BookCard from "./BookCard";
 import { BookHeart } from "lucide-react";
 import { useFavoritesStore } from "@/States/useFavoriteState";
@@ -41,9 +41,9 @@ function FavoriteList() {
 
   return (
     <div className="flex flex-col gap-5 p-5">
-      <Label className="text-5xl m-5 flex items-center gap-3">
-        <BookHeart size={36}></BookHeart>Favoriten
-      </Label>
+      <div className="ml-5 mr-5">
+        <SectionHeader title="Favoriten" icon={<BookHeart size={20} />} variant="cart" />
+      </div>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-40">
@@ -69,9 +69,9 @@ function FavoriteList() {
             <SectionHeader title="Ihre Favoriten" />
           </div>
           {filteredFavorites.length === 0 ? (
-            <Label className="text-2xl m-5 flex items-center gap-3">
+            <div className="text-2xl m-5 flex items-center gap-3">
               Keine Favoriten hinzugefügt
-            </Label>
+            </div>
           ) : (
             filteredFavorites.map((book) => (
               <BookCard
@@ -90,7 +90,7 @@ function FavoriteList() {
   <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg detail-panel">
           {selectedCard ? (
             <div>
-              <h2 className="text-3xl mb-2">{selectedCard.name}</h2>
+              <SectionHeader title={selectedCard.name} />
               <p>{selectedCard.descriptionLong}</p>
             </div>
           ) : (

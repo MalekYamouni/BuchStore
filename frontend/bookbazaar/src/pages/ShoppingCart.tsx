@@ -150,7 +150,7 @@ function ShoppingCart() {
             Stöber Sie hier<GlassesIcon></GlassesIcon>
           </span>
         ) : (
-          <h2>Gesamtpreis {totalPrice.toFixed(2)}€</h2>
+          <SectionHeader title={`Gesamtpreis ${totalPrice.toFixed(2)}€`} />
         )}
       </div>
     </div>
