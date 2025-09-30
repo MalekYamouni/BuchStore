@@ -22,9 +22,9 @@ function ShoppingCart() {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const { buyBooksMutation } = useBooks();
-  const { data: getuserById } = useUsers();
+  const { getuserById } = useUsers();
   
-  const userBalance = getuserById?.balance;
+  const userBalance = getuserById.data?.balance;
   const navigate = useNavigate();
   const shoppingCart = useCartStore((s) => s.shoppingCart);
   const addLocal = useCartStore((s) => s.addToCart);

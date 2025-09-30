@@ -1,6 +1,7 @@
 import type { Book } from "../interface/Book";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../States/userAuthState";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const API_URL = "http://localhost:8080/api";
 
@@ -16,10 +17,13 @@ async function getBooks(token: string): Promise<Book[]> {
   return res.json();
 }
 
-async function addBook(book: Omit<Book, "id">, token : string): Promise<Book> {
+async function addBook(book: Omit<Book, "id">, token: string): Promise<Book> {
   const res = await fetch(`${API_URL}/books`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(book),
   });
 
@@ -29,7 +33,7 @@ async function addBook(book: Omit<Book, "id">, token : string): Promise<Book> {
   return data;
 }
 
-async function deleteBook(id: number, token:string): Promise<void> {
+async function deleteBook(id: number, token: string): Promise<void> {
   const res = await fetch(`${API_URL}/books/${id}`, {
     method: "DELETE",
     headers: {
@@ -52,21 +56,15 @@ async function buyBook(bookId: number, token: string) {
   return res.json();
 }
 
-async function buyBooks(
-  purchases: { bookId: number; quantity: number }[],
-  token: string
-) {
-  const res = await fetch(`${API_URL}/books/buyBooks`, {
+async function buyBooks(purchases: { bookId: number; quantity: number }[]) {
+  const res = await fetchWithAuth(`${API_URL}/books/buyBooks`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify({ purchases }),
   });
 
   if (!res.ok) throw new Error("Fehler beim Kaufen der Bücher");
 
+  console.log(res.body)
   return res.json();
 }
 
@@ -85,14 +83,14 @@ export default function useBooks() {
   });
 
   const addNewBook = useMutation({
-    mutationFn: (book: Omit<Book,"id">) => addBook(book, token),
+    mutationFn: (book: Omit<Book, "id">) => addBook(book, token),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["books"] });
     },
   });
 
   const deleteBookFrontEnd = useMutation({
-    mutationFn:(id: number)=> deleteBook(id, token!),
+    mutationFn: (id: number) => deleteBook(id, token!),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["books"] });
     },
@@ -110,7 +108,7 @@ export default function useBooks() {
       purchases,
     }: {
       purchases: { bookId: number; quantity: number }[];
-    }) => buyBooks(purchases, token),
+    }) => buyBooks(purchases),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["books"] });
     },

@@ -13,7 +13,7 @@ async function getUserById(): Promise<User> {
 }
 
 async function addUser(user: Omit<UserRegistration, "id">): Promise<User> {
-  const res = await fetchWithAuth(`${API_URL}/addUser`, {
+  const res = await fetch(`${API_URL}/addUser`, {
     method: "POST",
     body: JSON.stringify(user),
   });

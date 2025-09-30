@@ -65,6 +65,7 @@ func (s *DefaultUserService) AddUser(user *models.User) (*models.User, error) {
 	if user.Role == "" {
 		user.Role = "user"
 	}
+
 	if len(user.Name) < 3 || len(user.Lastname) < 3 {
 		return nil, errors.New("vor- Nachname müssen mindestens 3 Zeichen haben")
 	}
@@ -73,13 +74,9 @@ func (s *DefaultUserService) AddUser(user *models.User) (*models.User, error) {
 		return nil, errors.New("passwort muss mindestens 6 Zeichen haben")
 	}
 
-	existingUser, err := s.repo.GetUserByUserId(user.ID)
+	existingUser, err := s.repo.GetUserByUserName(user.Username)
 
-	if err != nil {
-		return nil, err
-	}
-
-	if existingUser != nil {
+	if err == nil && existingUser != nil {
 		return nil, errors.New("username existiert bereits")
 	}
 

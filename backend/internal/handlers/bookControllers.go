@@ -91,13 +91,14 @@ func (c *BookController) BuyBook(ctx *gin.Context) {
 
 func (c *BookController) BuyBooks(ctx *gin.Context) {
 
-	userIDRaw, exists := ctx.Get("userId")
+	userAny, exists := ctx.Get("user")
+
 	if !exists {
-		ctx.JSON(400, gin.H{"error": "UserId nicht gefunden"})
+		ctx.JSON(400, gin.H{"error": "Nicht eingeloggt"})
 		return
 	}
 
-	userID := userIDRaw.(int)
+	user := userAny.(models.User)
 
 	var body struct {
 		Purchases []struct {
@@ -125,7 +126,7 @@ func (c *BookController) BuyBooks(ctx *gin.Context) {
 		}
 	}
 
-	err := c.Service.BuyBooks(userID, purchases)
+	err := c.Service.BuyBooks(user.ID, purchases)
 
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})

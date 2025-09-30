@@ -53,7 +53,7 @@ func Run() {
 		api.GET("/books", authMiddleware, bookController.GetBooks)
 		api.GET("/users", authMiddleware, authAdminOnly, userController.GetUsers)
 		api.GET("/user/me", authMiddleware, userController.GetUserByUserId)
-		api.POST("/addUser", authMiddleware, authAdminOnly, userController.AddUser)
+		api.POST("/addUser", userController.AddUser)
 		api.POST("/books/:id/borrowBook", authMiddleware, bookController.BorrowBook)
 		api.GET("/books/borrowedBooks", authMiddleware, bookController.GetBorrowedBooks)
 		api.POST("/books/:id/buyBook", authMiddleware, bookController.BuyBook)
