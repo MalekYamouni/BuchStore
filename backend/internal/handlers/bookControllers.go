@@ -286,3 +286,28 @@ func (c *BookController) RemoveFromCart(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"message": "Buch erfolgreich aus dem Warenkorb entfernt."})
 }
+
+func (c *BookController) AddToFavorites(ctx *gin.Context) {
+	userAny, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(400, gin.H{"error": "Nicht eingeloggt"})
+		return
+	}
+
+	user := userAny.(models.User)
+
+	bookIdStr := ctx.Param("id")
+	bookId, err := strconv.Atoi(bookIdStr)
+
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Ungültige Buch-ID"})
+		return
+	}
+
+	if err := c.Service.AddToFavorites(user.ID, bookId); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "Buch erfolgreich den Favoriten hinzugefügt."})
+}

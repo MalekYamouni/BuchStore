@@ -100,6 +100,7 @@ export default function useBooks() {
     mutationFn: ({ bookId }: { bookId: number }) => buyBook(bookId, token),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["books"] });
+      qc.invalidateQueries({ queryKey: ["users"] });
     },
   });
 
@@ -111,6 +112,8 @@ export default function useBooks() {
     }) => buyBooks(purchases),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["books"] });
+      // Refresh user data so balance/Guthaben is updated immediately
+      qc.invalidateQueries({ queryKey: ["users"] });
     },
   });
 

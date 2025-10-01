@@ -27,6 +27,7 @@ type BookService interface {
 	GetCartBooks(userId int) ([]models.Book, error)
 	AddToCart(userId, bookId int) error
 	RemoveFromCart(userId, bookId int) error
+	AddToFavorites(userId, bookId int) error
 }
 
 type DefaultBookService struct {
@@ -191,6 +192,13 @@ func (s *DefaultBookService) RemoveFromCart(userId, bookId int) error {
 	err := s.repo.RemoveFromCart(userId, bookId)
 	if err != nil {
 		log.Println("service Fehler beim entfernen der Bücher aus dem Warenkorb", err)
+		return err
+	}
+	return nil
+}
+func (s *DefaultBookService) AddToFavorites(userId, bookId int) error {
+	if err := s.repo.AddToFavorites(userId, bookId); err != nil {
+		log.Println("service Fehler beim hinzufügen eines Buches in die Favoriten")
 		return err
 	}
 	return nil

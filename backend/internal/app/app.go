@@ -67,6 +67,7 @@ func Run() {
 		api.GET("/books/cart", authMiddleware, bookController.GetCartBooks)
 		api.POST("/books/cart/:id", authMiddleware, bookController.AddToCart)
 		api.DELETE("/books/cart/:id", authMiddleware, bookController.RemoveFromCart)
+		api.POST("/books/addToFavorites/:id", authMiddleware, bookController.AddToFavorites)
 	}
 
 	if err := r.Run(); err != nil {

@@ -457,3 +457,74 @@ func (r *BookRepository) RemoveFromCart(userId, bookId int) error {
 	log.Println("RemoveFromCart: Eintrag entfernt für user", userId, "book", bookId)
 	return nil
 }
+
+func (r *BookRepository) GetFavoriteBooks(userId int) ([]models.Book, error) {
+	tx, err := r.db.Begin()
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer tx.Rollback()
+
+	query := "SELECT * FROM books b INNER JOIN user_favorites uf ON b.id = uf.book_id WHERE uf.user_id=$1"
+
+	rows, err := tx.Query(query, userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var books []models.Book
+
+	for rows.Next() {
+		var book models.Book
+
+		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Description, &book.Descriptionlong, &book.Genre, &book.Quantity, &book.DueAt, &book.ReservationExpiresAt); err != nil {
+			return nil, err
+		}
+
+		books = append(books, book)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
+func (r *BookRepository) AddToFavorites(userId, bookId int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer tx.Rollback()
+
+	query := "INSERT INTO user_favorites (user_id, book_id) VALUES ($1, $2)"
+
+	res, err := tx.Exec(query, userId, bookId)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		log.Println("Fehler beim Abfragen der betroffenen Zeilen in RemoveFromCart", err)
+		return err
+	}
+
+	if rowsAffected == 0 {
+		log.Println("AddToFavorites: kein Eintrag gefunden für user", userId, "book", bookId)
+		if err := tx.Commit(); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return nil
+}
