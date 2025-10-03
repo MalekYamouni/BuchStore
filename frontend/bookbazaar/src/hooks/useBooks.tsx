@@ -112,7 +112,6 @@ export default function useBooks() {
     }) => buyBooks(purchases),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["books"] });
-      // Refresh user data so balance/Guthaben is updated immediately
       qc.invalidateQueries({ queryKey: ["users"] });
     },
   });

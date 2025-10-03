@@ -45,7 +45,6 @@ function ShoppingCart() {
       quantity: book.quantityCart ?? 1,
     }));
 
-    console.log("Daten an Backend:", { purchases });
     await buyBooksMutation.mutateAsync({ purchases });
   };
 
