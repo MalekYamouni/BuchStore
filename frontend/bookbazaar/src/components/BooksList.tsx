@@ -43,7 +43,7 @@ function BookList() {
   return (
     <div className="flex flex-col gap-5 p-5">
       <div className="ml-5 mr-5">
-        <SectionHeader title="Bücherliste" icon={<LibraryBig size={20} />} variant="cart" />
+        <SectionHeader title="Bücherliste" icon={<LibraryBig size={20} />} />
       </div>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={genreFilter} onValueChange={setGenreFilter}>

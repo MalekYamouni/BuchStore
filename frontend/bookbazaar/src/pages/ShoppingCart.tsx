@@ -81,7 +81,7 @@ function ShoppingCart() {
     <div className="flex flex-col gap-5 p-5">
       <SectionHeader
         title="Warenkorb"
-        variant="cart"
+
         icon={<ShoppingBasket size={20} />}
         right={<span>Guthaben: {userBalance ?? 0} €</span>}
       />

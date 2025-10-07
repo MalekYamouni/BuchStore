@@ -42,7 +42,7 @@ function FavoriteList() {
   return (
     <div className="flex flex-col gap-5 p-5">
       <div className="ml-5 mr-5">
-        <SectionHeader title="Favoriten" icon={<BookHeart size={20} />} variant="cart" />
+        <SectionHeader title="Favoriten" icon={<BookHeart size={20} />}  />
       </div>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={filter} onValueChange={setFilter}>

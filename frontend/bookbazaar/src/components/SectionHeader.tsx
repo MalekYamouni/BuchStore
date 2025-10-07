@@ -4,7 +4,7 @@ type Props = {
   title: string;
   subtitle?: string;
   right?: React.ReactNode;
-  variant?: "default" | "cart";
+  variant?: "default";
   icon?: React.ReactNode;
 };
 
@@ -28,12 +28,10 @@ export default function SectionHeader({ title, subtitle, right, variant = "defau
       <div
         className={`relative w-full flex items-center bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-2xl shadow-md overflow-hidden dark:bg-slate-800/70 dark:border-slate-700/40 transform transition-all duration-500 ${containerAnim}`}
       >
-  {/* Accent bar */}
   <div className="h-full w-2 section-accent" />
 
-        {/* Title area (cart variant uses icon) */}
-        <div className={`flex-1 px-6 py-4 flex items-center gap-4 ${variant === "cart" ? "py-3" : "py-4"}`}>
-          {variant === "cart" && icon ? (
+        <div className={`flex-1 px-6 py-4 flex items-center gap-4 ${variant === "default" ? "py-3" : "py-4"}`}>
+          {variant === "default" && icon ? (
             <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm dark:bg-slate-700" style={{ boxShadow: 'inset 0 0 0 2px var(--subtle-purple-ghost)' }}>
               {icon}
             </div>
@@ -41,7 +39,6 @@ export default function SectionHeader({ title, subtitle, right, variant = "defau
           <h3 className="text-2xl sm:text-3xl font-medium text-slate-900 dark:text-slate-100 leading-tight">{title}</h3>
         </div>
 
-        {/* Right slot: pill */}
         {right ? (
           <div className="pr-4">
             <div className="section-right-pill inline-flex items-center px-3 py-1.5 bg-white shadow-sm rounded-full text-sm font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-100">

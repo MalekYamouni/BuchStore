@@ -10,6 +10,8 @@ import ProtectedRoute from "./States/protectedRoute";
 import BorrowBooks from "./pages/BorrowPage";
 import { useEffect } from "react";
 import { tryAutoLogin } from "./lib/auth";
+import { UserConfiguration } from "./pages/UserConfiguration";
+import { UserProfile } from "./pages/UserProfile";
 
 function App() {
   useEffect(() => {
@@ -62,6 +64,15 @@ function App() {
             </ProtectedRoute>
           }
         ></Route>
+         <Route
+          path="userProfile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        ></Route>
+
       </Routes>
     </BrowserRouter>
   );

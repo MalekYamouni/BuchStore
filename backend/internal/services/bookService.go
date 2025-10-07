@@ -50,15 +50,18 @@ func validateBook(Book *models.Book) error {
 
 // Buch hinzufügen
 func (s *DefaultBookService) Create(book *models.Book) (*models.Book, error) {
-	if err := validateBook(book); err != nil {
-		return nil, errors.New("")
-	}
+	// Prüfe explizite Business Logic Validierungen zuerst
 	if len(book.Name) < 3 {
 		return nil, errors.New("buchname muss mindestens 3 Zeichen enthalten")
 	}
 
 	if len(book.Author) < 3 {
 		return nil, errors.New("autorenname muss mindestens 3 Zeichen enthalten")
+	}
+
+	// Dann struct-validation (falls weitere Tags hinzugefügt werden)
+	if err := validateBook(book); err != nil {
+		return nil, err
 	}
 
 	existingBook, err := s.repo.GetBookByName(book.Name)

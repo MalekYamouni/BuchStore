@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "../styles/NavBar.css";
 import {
   NavigationMenu,
@@ -19,12 +19,16 @@ import { logout } from "@/lib/auth";
 
 function NavBar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const userProfileNav = () => {
+    navigate("/userProfile");
+  }
   
   const isAdmin = useAuthStore((s) => s.isAdmin());
   return (
     <div>
-      <NavigationMenu>
+      <NavigationMenu className="hover: cursor-default">
         <NavigationMenuItem className="flex gap-50 p-5 text-lg font-semibold">
           {isLoggedIn ? (
             ""
@@ -92,7 +96,7 @@ function NavBar() {
             <DropdownMenuLabel className="bg-gray-200">
               Mein Konto
             </DropdownMenuLabel>
-            <DropdownMenuItem>Profil</DropdownMenuItem>
+            <DropdownMenuItem onClick={userProfileNav}>Profil</DropdownMenuItem>
             <DropdownMenuItem>Einstellungen</DropdownMenuItem>
             {isLoggedIn == true ? (
               <DropdownMenuItem

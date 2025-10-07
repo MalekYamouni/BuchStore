@@ -64,7 +64,7 @@ function BorrowBooks() {
   return (
     <div className="flex flex-col gap-5 p-5">
       <div className="ml-5 mr-5">
-        <SectionHeader title="Verleih" icon={<LibrarySquare size={20} />} right={<span>Guthaben : {userBalance} €</span>} variant="cart" />
+        <SectionHeader title="Verleih" icon={<LibrarySquare size={20} />} right={<span>Guthaben : {userBalance} €</span>}/>
       </div>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={genreFilter} onValueChange={setGenreFilter}>
