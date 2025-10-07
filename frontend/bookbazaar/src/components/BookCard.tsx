@@ -119,7 +119,7 @@ function BookCard({
         </div>
         <div>
           <p>Beschreibung...</p>
-          <p className=" text-sm text-gray-600">{book.description}</p>
+          <p className=" text-sm text-muted-foreground">{book.description}</p>
         </div>
       </CardContent>
 
@@ -128,7 +128,7 @@ function BookCard({
           onClick={(e) => {
             e.stopPropagation(), addToFavorite(book);
           }}
-          className="bg-gray-200 hover:bg-pink-600 rounded-full px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 "
+          className="bg-muted text-foreground hover:bg-muted/80 rounded-full px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 border border-border"
           variant={"secondary"}
         >
           {isFavorite ? <HeartMinus /> : <HeartPlus />}
@@ -139,7 +139,7 @@ function BookCard({
             onClick={(e) => {
               e.stopPropagation(), handleAdd(book);
             }}
-            className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
+            className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
           >
             <ShoppingBasket />
           </Button>
@@ -151,8 +151,7 @@ function BookCard({
               e.stopPropagation();
               deleteBookFrontEnd.mutate(book.id);
             }}
-            className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
-            variant={"destructive"}
+            className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
           >
             <Trash2 />
           </Button>
@@ -165,7 +164,7 @@ function BookCard({
                 e.stopPropagation();
                 handleBorrow(book.id);
               }}
-              className="bg-gray-200 hover:bg-green-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
+              className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
             >
               ausleihen
             </Button>
@@ -179,7 +178,7 @@ function BookCard({
                 e.stopPropagation();
                 handleGiveBack(book.id);
               }}
-              className="bg-gray-200 hover:bg-red-600 text-black rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 "
+              className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
             >
               zurückgeben
             </Button>

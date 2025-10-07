@@ -75,7 +75,7 @@ function AddBook() {
       <div className="max-w-4xl mx-auto">
         <SectionHeader title="Buch hinzufügen" subtitle="Fülle die Felder aus, um ein neues Buch zur Bibliothek hinzuzufügen." />
 
-        <div className="mt-4 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-md p-6">
+  <div className="mt-4 bg-card text-foreground backdrop-blur-sm border border-border rounded-2xl shadow-md p-6">
           <form className="flex flex-col gap-4" onSubmit={handleNewBookSubmit(onNewBookSubmit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input

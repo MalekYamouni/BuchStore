@@ -64,7 +64,15 @@ function BorrowBooks() {
   return (
     <div className="flex flex-col gap-5 p-5">
       <div className="ml-5 mr-5">
-        <SectionHeader title="Verleih" icon={<LibrarySquare size={20} />} right={<span>Guthaben : {userBalance} €</span>}/>
+        <SectionHeader
+          title="Verleih"
+          icon={<LibrarySquare size={20} />}
+          right={
+            <span>
+              Guthaben: <span className="amount">{userBalance}</span> <span className="currency">€</span>
+            </span>
+          }
+        />
       </div>
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={genreFilter} onValueChange={setGenreFilter}>
@@ -87,7 +95,7 @@ function BorrowBooks() {
       </div>
       <div className="flex gap-10">
         <div className="flex-1 flex flex-col gap-3">
-          <div className="ml-5">
+          <div className="ml-5 mt-5">
             <SectionHeader title="Geliehen" />
           </div>
           {filteredBooks?.map((book) => (
@@ -104,7 +112,7 @@ function BorrowBooks() {
           ))}
         </div>
         <div className="flex-1 flex flex-col gap-3">
-          <div className="ml-5">
+          <div className="ml-5 mt-5">
             <SectionHeader title="Verfügbar" />
           </div>
           {availableBooks?.map((borrowBook) => (
@@ -122,16 +130,27 @@ function BorrowBooks() {
         </div>
         <div>
         </div>
-  <div className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg detail-panel">
-          {selectedCard ? (
-            <div>
-              <SectionHeader title={selectedCard.name} />
-              <p>{selectedCard.descriptionLong}</p>
-            </div>
-          ) : (
-            <p>Bitte wähle ein Buch, um Details zu sehen.</p>
-          )}
-        </div>
+        <aside className="flex-1 border border-border bg-card text-foreground p-5 rounded-2xl shadow-lg transition-all duration-500 detail-panel">
+          <div
+            className={`detail-inner transition-transform duration-500 ${
+              selectedCard ? "opacity-100 translate-x-0" : "opacity-20 blur-sm "
+            }`}
+          >
+            {selectedCard ? (
+              <>
+                <SectionHeader title={selectedCard.name} />
+                <p className="mb-3 text-sm text-muted-foreground">{selectedCard.descriptionLong}</p>
+              </>
+            ) : (
+              <>
+                <div className="sticky top-0 z-10 -mx-5 px-5 pt-2 pb-3 bg-card border-b border-border">
+                  <SectionHeader title="Wähle ein Buch" />
+                </div>
+                <p className="mb-3 text-sm text-muted-foreground">Bitte wähle ein Buch, um Details zu sehen.</p>
+              </>
+            )}
+          </div>
+        </aside>
       </div>
     </div>
   );

@@ -87,7 +87,7 @@ function ShoppingCartCard({ book, onRemove, onQtyChange }: ShoppingCartCardProps
         <CardContent>{book.price?.toFixed(2)} €</CardContent>
         <CardFooter className="flex justify-start gap-3">
           <Button
-            className="bg-gray-500 px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 hover:bg-red-500 "
+            className="bg-muted text-foreground border border-border px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 hover:bg-muted/80 "
             onClick={() => {
               if (onRemove) return onRemove(book.id);
               removeLocal(book.id);
@@ -96,7 +96,7 @@ function ShoppingCartCard({ book, onRemove, onQtyChange }: ShoppingCartCardProps
             <X />
           </Button>
           <Button
-            className="bg-gray-500 px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 hover:bg-green-700 "
+            className="bg-muted text-foreground border border-border px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 hover:bg-muted/80 "
             onClick={() => {
               if (onQtyChange) return onQtyChange(book.id, +1);
               updateQuantity(book.id, +1);
@@ -105,7 +105,7 @@ function ShoppingCartCard({ book, onRemove, onQtyChange }: ShoppingCartCardProps
             <PlusIcon />
           </Button>
           <Button
-            className="bg-gray-500 px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 hover:bg-green-700"
+            className="bg-muted text-foreground border border-border px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 hover:bg-muted/80"
             onClick={() => {
               if (onQtyChange) return onQtyChange(book.id, -1);
               updateQuantity(book.id, -1);

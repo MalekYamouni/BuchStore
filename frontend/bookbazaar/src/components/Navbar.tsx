@@ -13,9 +13,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { logout } from "@/lib/auth";
-
+import { ModeToggle } from "./ui/mode-toggle";
 
 function NavBar() {
   const location = useLocation();
@@ -23,12 +23,12 @@ function NavBar() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const userProfileNav = () => {
     navigate("/userProfile");
-  }
-  
+  };
+
   const isAdmin = useAuthStore((s) => s.isAdmin());
   return (
-    <div>
-      <NavigationMenu className="hover: cursor-default">
+    <div className="sticky top-0 z-50">
+      <NavigationMenu className="hover:cursor-default w-full bg-muted border-b border-border">
         <NavigationMenuItem className="flex gap-50 p-5 text-lg font-semibold">
           {isLoggedIn ? (
             ""
@@ -88,20 +88,20 @@ function NavBar() {
         </NavigationMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="px-3 py-2 bg-gray-200 rounded-4xl">
+            <button className="px-3 py-2 bg-muted text-foreground hover:bg-muted/80 active:bg-muted/70 border border-border rounded-4xl transition-colors">
               <UserRound></UserRound>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-60 h-50 p-3 bg-white shadow-md rounded flex flex-col gap-2 dropdown-over">
-            <DropdownMenuLabel className="bg-gray-200">
+          <DropdownMenuContent className="w-60 h-50 p-3 dropdown-over">
+            <DropdownMenuLabel className="bg-muted text-muted-foreground">
               Mein Konto
             </DropdownMenuLabel>
-            <DropdownMenuItem onClick={userProfileNav}>Profil</DropdownMenuItem>
-            <DropdownMenuItem>Einstellungen</DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-muted hover:text-foreground" onClick={userProfileNav}>Profil</DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-muted hover:text-foreground">Einstellungen</DropdownMenuItem>
             {isLoggedIn == true ? (
               <DropdownMenuItem
                 onClick={() => logout()}
-                className="flex items-center justify-between"
+                className="flex items-center justify-between hover:bg-muted hover:text-foreground"
               >
                 Logout<LogOut></LogOut>
               </DropdownMenuItem>
@@ -110,6 +110,7 @@ function NavBar() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+        <ModeToggle />
       </NavigationMenu>
     </div>
   );

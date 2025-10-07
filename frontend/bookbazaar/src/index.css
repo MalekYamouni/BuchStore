@@ -44,12 +44,12 @@
 :root {
   --radius: 0.75rem;
   --background: #ffffff;
-  --foreground: #0f172a; /* slate-900 */
+  --foreground: #000000; /* slate-900 */
   --card: #ffffff;
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #4f46e5; /* indigo-600 */
+  --primary: #000000; /* indigo-600 */
   --primary-foreground: #ffffff;
   --secondary: #f8fafc; /* very light */
   --secondary-foreground: #0f172a;
@@ -60,9 +60,9 @@
   --destructive: #ef4444;
   --border: #e6e9ef;
   --input: #f8fafc;
-  --ring: rgba(79,70,229,0.14);
+  --ring: rgba(12, 11, 24, 0.14);
   --chart-1: #ffb84d;
-  --chart-2: #7c3aed;
+  --chart-2: #000000;
   --chart-3: #06b6d4;
   --chart-4: #f59e0b;
   --chart-5: #10b981;
@@ -78,43 +78,56 @@
 
 /* subtle purple accent variables (very light usage) */
 :root, .dark {
-  --subtle-purple-strong: rgba(107,33,168,0.12); /* slightly stronger for small accents */
-  --subtle-purple-ghost: rgba(107,33,168,0.06); /* very faint backgrounds */
-  --subtle-purple-solid: #6b21a8; /* for tiny elements like icons if needed */
+  --subtle-purple-strong: rgba(0, 0, 0, 0.12); /* slightly stronger for small accents */
+  --subtle-purple-ghost: rgba(0, 0, 0, 0.06); /* very faint backgrounds */
+  --subtle-purple-solid: #010002; /* for tiny elements like icons if needed */
 }
 
 .dark {
-  --background: #071025; /* dark navy */
-  --foreground: #e6eef8; /* soft white */
-  --card: #071025;
-  --card-foreground: #e6eef8;
-  --popover: #0b1220;
-  --popover-foreground: #e6eef8;
-  --primary: #7c3aed; /* purple-600 */
-  --primary-foreground: #ffffff;
-  --secondary: #0f172a;
-  --secondary-foreground: #e6eef8;
-  --muted: #0b1220;
-  --muted-foreground: #94a3b8;
-  --accent: #c59d5f;
-  --accent-foreground: #071025;
-  --destructive: #f87171;
+  /* Dark mode palette guide:
+     - To make the navbar slightly brighter than the page background,
+       tweak --muted relative to --background (e.g., background #111111 vs muted #141414).
+     - Components should use token classes (bg-card, bg-muted, text-foreground, border-border)
+       so changes here propagate consistently across the app.
+  */
+  --background: #111111;           /* fast schwarz */
+  --foreground: #e5e7eb;           /* hellgrau */
+  --card: #0d0d0d;                 /* dunkle Karten */
+  --card-foreground: #e5e7eb;
+  --popover: #0d0d0d;
+  --popover-foreground: #e5e7eb;
+
+  --primary: #ffffff;              /* neutral, kein Lila */
+  --primary-foreground: #0a0a0a;
+  --secondary: #111111;
+  --secondary-foreground: #e5e7eb;
+
+  --muted: #141414;
+  --muted-foreground: #9ca3af;     /* als Hex statt HSL-String */
+
+  --accent: #000000;               /* dezentes Grau statt Gold/Lila */
+  --accent-foreground: #e5e7eb;
+
+  --destructive: #ef4444;
+
   --border: rgba(255,255,255,0.06);
-  --input: rgba(255,255,255,0.04);
-  --ring: rgba(124,58,237,0.18);
-  --chart-1: #ffb84d;
-  --chart-2: #7c3aed;
+  --input: rgba(255,255,255,0.06);
+
+  --ring: rgba(255,255,255,0.10);  /* neutraler Focus-Ring */
+  --chart-1: #f59e0b;
+  --chart-2: #3b82f6;              /* kein Lila mehr */
   --chart-3: #06b6d4;
-  --chart-4: #f59e0b;
-  --chart-5: #10b981;
-  --sidebar: #071025;
-  --sidebar-foreground: #e6eef8;
-  --sidebar-primary: #7c3aed;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #c59d5f;
-  --sidebar-accent-foreground: #071025;
-  --sidebar-border: rgba(255,255,255,0.04);
-  --sidebar-ring: rgba(124,58,237,0.12);
+  --chart-4: #10b981;
+  --chart-5: #020203;              /* optional anpassen */
+
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #e5e7eb;
+  --sidebar-primary: #ffffff;       /* neutral, kein Lila */
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1f2937;
+  --sidebar-accent-foreground: #e5e7eb;
+  --sidebar-border: rgba(255,255,255,0.06);
+  --sidebar-ring: rgba(255,255,255,0.10);
 }
 
 @layer base {
@@ -131,9 +144,5 @@
     background: linear-gradient(180deg, var(--subtle-purple-strong), var(--subtle-purple-ghost));
   }
 
-  /* active nav link underline softened to purple tint */
-  nav a.active {
-    box-shadow: inset 0 -4px 0 var(--subtle-purple-ghost);
-    text-decoration: none; /* keep it subtle */
-  }
+  /* active nav link underline removed to avoid double-styling/blur under links */
 }

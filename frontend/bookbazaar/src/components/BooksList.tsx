@@ -1,5 +1,5 @@
 import BookCard from "./BookCard";
-import { /*Label*/ } from "./ui/label";
+import /*Label*/ "./ui/label";
 import { LibraryBig } from "lucide-react";
 import { useFavoritesStore } from "@/States/useFavoriteState";
 import useBooks from "@/hooks/useBooks";
@@ -21,8 +21,6 @@ function BookList() {
   const [genreFilter, setGenreFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedCard, setSelectedCard] = useState<Book>();
-
-
 
   const filteredBooks = books?.filter((book) => {
     if (genreFilter !== "all" && book.genre !== genreFilter) {
@@ -67,7 +65,7 @@ function BookList() {
       </div>
       <div className="flex gap-10">
         <div className="flex-1 flex flex-col gap-3 list-column">
-          <div className="ml-5">
+          <div className="ml-5 mt-5">
             <SectionHeader title="Auswahl" />
           </div>
           {filteredBooks?.map((book) => (
@@ -83,13 +81,19 @@ function BookList() {
             />
           ))}
         </div>
-        <aside className="flex-1 border-1 border-gray-300 p-5 rounded-2xl shadow-lg transition-all duration-500 detail-panel">
-          <div className={`detail-inner transition-transform duration-500 ${selectedCard ? "opacity-100 translate-x-0" : "opacity-20 blur-sm"}`}>
+        <aside className="flex-1 border border-border bg-card text-foreground p-5 rounded-2xl shadow-lg transition-all duration-500 detail-panel">
+          <div
+            className={`detail-inner transition-transform duration-500 ${
+              selectedCard ? "opacity-100 translate-x-0" : "opacity-20 blur-sm "
+            }`}
+          >
             {selectedCard ? (
               <>
                 <SectionHeader title={selectedCard.name} />
-                <p className="mb-3 text-sm text-slate-700">{selectedCard.descriptionLong}</p>
-                <div className="meta text-xs text-gray-500">
+                <p className="mb-3 text-sm text-muted-foreground">
+                  {selectedCard.descriptionLong}
+                </p>
+                <div className="meta text-xs text-muted-foreground">
                   <div>Autor: {selectedCard.author}</div>
                   <div>Genre: {selectedCard.genre}</div>
                   <div>Preis: {selectedCard.price.toFixed(2)}€</div>
@@ -97,8 +101,13 @@ function BookList() {
               </>
             ) : (
               <>
-                <SectionHeader title="Wähle ein Buch" />
-                <p className="mb-3 text-sm text-slate-500">Kein Buch ausgewählt. Wähle links eine Karte aus, um die Details hier zu sehen.</p>
+                <div className="sticky top-0 z-10 -mx-5 px-5 pt-2 pb-3 bg-card border-b border-border">
+                  <SectionHeader title="Wähle ein Buch" />
+                </div>
+                <p className="mb-3 text-sm text-muted-foreground">
+                  Kein Buch ausgewählt. Wähle links eine Karte aus, um die
+                  Details hier zu sehen.
+                </p>
               </>
             )}
           </div>

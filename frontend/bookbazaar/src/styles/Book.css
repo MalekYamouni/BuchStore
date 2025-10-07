@@ -140,11 +140,12 @@
 /* Sticky detail panel */
 .detail-panel {
   position: sticky;
-  top: 1.5rem;
-  height: calc(100vh - 3rem);
+  top: 5.5rem;
+  height: calc(100vh - 8rem);
   overflow: auto;
+  border-radius: 5px;
 }
-.detail-inner { padding-bottom: 2rem; }
+.detail-inner { padding-bottom: 5rem; }
 
 /* faded state for detail panel when no selection: reduce contrast and slightly blur */
 .detail-inner.opacity-20 {
@@ -182,19 +183,20 @@
 
 /* Elegant styling for the right-hand description panel */
 .detail-panel {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  /* Respect theme tokens instead of hardcoded light gradient */
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
   padding: 1.25rem;
   border-radius: 12px;
-  color: #0f172a; /* slate-900 */
+  color: hsl(var(--foreground));
 }
 .detail-panel .detail-inner h2,
 .detail-panel h2 {
-  color: #0b1220; /* slightly deeper than slate-900 */
+  color: hsl(var(--foreground));
   letter-spacing: -0.01em;
 }
 .detail-panel p {
-  color: #334155; /* slate-700 */
+  color: hsl(var(--muted-foreground));
   line-height: 1.6;
 }
 .detail-panel .meta {
@@ -204,43 +206,42 @@
   gap: 0.35rem;
 }
 .detail-panel .meta div {
-  color: #64748b; /* slate-500 */
+  color: hsl(var(--muted-foreground));
 }
 
 /* subtle scrollbar styling to match the panel */
 .detail-panel::-webkit-scrollbar { width: 8px; }
-.detail-panel::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.06); border-radius: 8px; }
+.detail-panel::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 8px; }
 
 
 
 
-/* right-side pill inside SectionHeader for balance/credit with subtle purple glow */
+/* right-side pill inside SectionHeader for balance/credit — theme-aware */
 .section-right-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
   border-radius: 9999px;
-  background: linear-gradient(180deg, rgba(107,33,168,0.06), rgba(107,33,168,0.03));
-  box-shadow: 0 6px 18px rgba(107,33,168,0.06), 0 0 18px rgba(107,33,168,0.04);
-  /* make the text much darker for legibility */
-  color: rgba(15, 23, 42, 0.92); /* slate-900 heavy */
-  font-weight: 600;
+  background-color: hsl(var(--muted));
+  /* subtle neutral outline instead of purple glow */
+  box-shadow: 0 0 0 1px hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  font-weight: 400; /* normal weight */
 }
 
 /* emphasize numeric amount inside the pill */
 .section-right-pill .amount, .section-right-pill .currency {
-  color: rgba(15, 23, 42, 0.98);
-}
-.section-right-pill .amount {
-  font-weight: 800;
-  font-size: 1rem;
+  color: hsl(var(--foreground));
+  font-weight: inherit;
+  font-size: inherit;
 }
 
 /* subtle pulsing highlight on hover/focus for the pill */
 .section-right-pill:hover,
 .section-right-pill:focus {
-  box-shadow: 0 10px 30px rgba(107,33,168,0.10), 0 0 30px rgba(107,33,168,0.08);
+  /* keep hover subtle and theme-neutral */
+  box-shadow: 0 0 0 1px hsl(var(--border));
   transform: translateY(-1px);
 }
 

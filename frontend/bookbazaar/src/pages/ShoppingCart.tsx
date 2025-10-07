@@ -81,9 +81,12 @@ function ShoppingCart() {
     <div className="flex flex-col gap-5 p-5">
       <SectionHeader
         title="Warenkorb"
-
         icon={<ShoppingBasket size={20} />}
-        right={<span>Guthaben: {userBalance ?? 0} €</span>}
+        right={
+          <span>
+            Guthaben: <span className="amount">{userBalance ?? 0}</span> <span className="currency">€</span>
+          </span>
+        }
       />
       <div className="text-2xl m-5 flex items-center gap-3">
         <Select value={filter} onValueChange={setFilter}>
@@ -133,14 +136,18 @@ function ShoppingCart() {
           />
         ))
       )}
-      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-gray-300 max-w-3xl w-full mx-auto hover:underline ">
+      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-muted max-w-3xl w-full mx-auto hover:underline border border-border">
         {filteredCart.length > 0 && (
-          <Button className="w-full rounded-4xl" onClick={handleBuyAll}>
+          <Button
+            variant="outline"
+            className="w-full rounded-4xl bg-muted text-foreground border border-border hover:bg-muted/80"
+            onClick={handleBuyAll}
+          >
             <ShoppingBasket className="w-full"></ShoppingBasket>
           </Button>
         )}
       </div>
-      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-gray-300 max-w-3xl w-full mx-auto hover:underline ">
+      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-card text-foreground max-w-3xl w-full mx-auto">
         {totalPrice === 0 ? (
           <span
             onClick={() => navigate("/books")}

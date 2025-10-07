@@ -10,8 +10,9 @@ import ProtectedRoute from "./States/protectedRoute";
 import BorrowBooks from "./pages/BorrowPage";
 import { useEffect } from "react";
 import { tryAutoLogin } from "./lib/auth";
-import { UserConfiguration } from "./pages/UserConfiguration";
 import { UserProfile } from "./pages/UserProfile";
+import { ModeToggle } from "./components/ui/mode-toggle";
+
 
 function App() {
   useEffect(() => {
