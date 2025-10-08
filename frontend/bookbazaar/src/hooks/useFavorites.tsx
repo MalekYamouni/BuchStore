@@ -1,9 +1,9 @@
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const API_URL = "http://localhost:8080/api";
 
 async function AddToFavorites(bookId: number) {
-  const res = await fetch(`${API_URL}/addToFavorites/${bookId}`, {
+  const res = await fetchWithAuth(`/addToFavorites/${bookId}`, {
     method: "POST",
     headers: { ContentType: "application/json" },
   });

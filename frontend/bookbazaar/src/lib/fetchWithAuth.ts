@@ -1,9 +1,11 @@
 import { useAuthStore } from "../States/userAuthState";
 const API_URL = "http://localhost:8080/api";
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 
 let refreshingPromise: Promise<string | null> | null = null;
 
-export async function fetchWithAuth(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+export async function fetchWithAuth(path: string, init?: RequestInit): Promise<Response> {
   const store = useAuthStore.getState();
   const token = store.token;
 
@@ -11,7 +13,7 @@ export async function fetchWithAuth(input: RequestInfo | URL, init?: RequestInit
   if (token) headers.set("Authorization", `Bearer ${token}`);
   if (!headers.get("Content-Type")) headers.set("Content-Type", "application/json");
 
-  const resp = await fetch(input, { ...init, headers, credentials: "include" });
+  const resp = await fetch(`${BASE}${path}`, { ...init, headers, credentials: "include" });
   if (resp.status !== 401) return resp;
 
   // 401 -> refresh
@@ -26,7 +28,7 @@ export async function fetchWithAuth(input: RequestInfo | URL, init?: RequestInit
   headers2.set("Authorization", `Bearer ${newToken}`);
   if (!headers2.get("Content-Type")) headers2.set("Content-Type", "application/json");
 
-  return fetch(input, { ...init, headers: headers2, credentials: "include" });
+  return fetch(`${BASE}${path}`, { ...init, headers: headers2, credentials: "include" });
 }
 
 async function doRefresh(): Promise<string | null> {
@@ -37,7 +39,7 @@ async function doRefresh(): Promise<string | null> {
   refreshingPromise = (async () => {
     try {
       // Cookie-basiert: kein Body, Browser sendet das HttpOnly-Cookie automatisch
-      const res = await fetch(`${API_URL}/refresh`, {
+      const res = await fetch(`${BASE}/refresh`, {
         method: "POST",
         credentials: "include",
       });

@@ -2,22 +2,27 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/fetchWithAuth";
 import type { User } from "@/interface/User";
 import type { UserRegistration } from "@/pages/UserLogin";
-
-const API_URL = "http://localhost:8080/api";
-
+import { apiFetch } from "@/lib/api";
+import { te } from "date-fns/locale";
 
 async function getUserById(): Promise<User> {
-  const res = await fetchWithAuth(`${API_URL}/user/me`);
+  const res = await fetchWithAuth(`/user/me`);
   if (!res.ok) throw new Error("Fehler beim Laden des Users");
   return res.json();
 }
 
 async function addUser(user: Omit<UserRegistration, "id">): Promise<User> {
-  const res = await fetch(`${API_URL}/addUser`, {
+  const res = await apiFetch("/addUser", {
     method: "POST",
     body: JSON.stringify(user),
   });
-  if (!res.ok) throw new Error("Fehler beim Registrieren");
+  console.log("Response-Status", res.status);
+
+  if (!res.ok){
+    const text = await res.text();
+    console.error("Fehlerantwort: ", text)
+    throw new Error(`Fehler beim Registrieren: ${res.status}`)
+  }
   return res.json();
 }
 

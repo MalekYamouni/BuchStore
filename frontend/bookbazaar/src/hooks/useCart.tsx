@@ -1,4 +1,6 @@
 import type { Book } from "@/interface/Book";
+import { apiFetch } from "@/lib/api";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuthStore } from "@/States/userAuthState";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { UseQueryResult, UseMutationResult } from "@tanstack/react-query";
@@ -10,11 +12,10 @@ type UseCartReturn = UseQueryResult<Book[], Error> & {
 
 export default function useCart(): UseCartReturn {
   const qc = useQueryClient();
-  const API_URL = "http://localhost:8080/api";
   const token = useAuthStore((s) => s.token);
 
   async function GetCartBooks(): Promise<Book[]> {
-    const res = await fetch(`${API_URL}/books/cart`, {
+    const res = await fetchWithAuth(`/books/cart`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +30,7 @@ export default function useCart(): UseCartReturn {
   }
 
   async function AddBookToCart(bookId: number): Promise<void> {
-    const res = await fetch(`${API_URL}/books/cart/${bookId}`, {
+    const res = await fetchWithAuth(`/books/cart/${bookId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +56,7 @@ export default function useCart(): UseCartReturn {
   });
 
   async function RemoveBookFromCart(bookId: number): Promise<void> {
-    const res = await fetch(`${API_URL}/books/cart/${bookId}`, {
+    const res = await fetchWithAuth(`/books/cart/${bookId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

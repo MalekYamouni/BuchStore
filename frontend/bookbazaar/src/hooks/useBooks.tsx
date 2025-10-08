@@ -2,11 +2,10 @@ import type { Book } from "../interface/Book";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../States/userAuthState";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-
-const API_URL = "http://localhost:8080/api";
+import { apiFetch } from "@/lib/api";
 
 async function getBooks(token: string): Promise<Book[]> {
-  const res = await fetch(`${API_URL}/books`, {
+  const res = await apiFetch("/books", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +17,7 @@ async function getBooks(token: string): Promise<Book[]> {
 }
 
 async function addBook(book: Omit<Book, "id">, token: string): Promise<Book> {
-  const res = await fetch(`${API_URL}/books`, {
+  const res = await apiFetch(`/books`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +33,7 @@ async function addBook(book: Omit<Book, "id">, token: string): Promise<Book> {
 }
 
 async function deleteBook(id: number, token: string): Promise<void> {
-  const res = await fetch(`${API_URL}/books/${id}`, {
+  const res = await apiFetch(`/books/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +44,7 @@ async function deleteBook(id: number, token: string): Promise<void> {
 }
 
 async function buyBook(bookId: number, token: string) {
-  const res = await fetch(`${API_URL}/books/${bookId}/buyBook`, {
+  const res = await fetchWithAuth(`/books/${bookId}/buyBook`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -57,7 +56,7 @@ async function buyBook(bookId: number, token: string) {
 }
 
 async function buyBooks(purchases: { bookId: number; quantity: number }[]) {
-  const res = await fetchWithAuth(`${API_URL}/books/buyBooks`, {
+  const res = await fetchWithAuth(`/books/buyBooks`, {
     method: "POST",
     body: JSON.stringify({ purchases }),
   });

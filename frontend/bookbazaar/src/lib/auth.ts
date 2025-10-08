@@ -1,8 +1,9 @@
 import { useAuthStore } from "@/States/userAuthState";
+import { apiFetch } from "./api";
 const API_URL = "http://localhost:8080/api";
 
 export async function login(username: string, password: string) {
-  const res = await fetch(`${API_URL}/login`, {
+  const res = await apiFetch("/login", {
     method: "POST",
     headers: { "Content-Typer": "application/json" },
     credentials: "include",

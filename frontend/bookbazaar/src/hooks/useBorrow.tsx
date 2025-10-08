@@ -1,15 +1,15 @@
 import type { Book } from "@/interface/Book";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../States/userAuthState";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function useBorrow() {
   const qc = useQueryClient();
-  const API_URL = "http://localhost:8080/api";
   const token = useAuthStore((s) => s.token);
 
   async function borrowBook(bookId: number): Promise<any> {
     if (!token) throw new Error("User ist nicht eingeloggt");
-    const res = await fetch(`${API_URL}/books/${bookId}/borrowBook`, {
+    const res = await fetchWithAuth(`/books/${bookId}/borrowBook`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,9 +21,10 @@ export default function useBorrow() {
     if (!res.ok) throw new Error("Fehler beim Leihen des Büches.");
     return res.json();
   }
+
   async function giveBorrowedBookback(bookId: number): Promise<any> {
     if (!token) throw new Error("User ist nicht eingeloggt");
-    const res = await fetch(`${API_URL}/books/${bookId}/giveBookBack`, {
+    const res = await fetchWithAuth(`/books/${bookId}/giveBookBack`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +37,7 @@ export default function useBorrow() {
   }
 
   async function getBorrowedBooks(): Promise<Book[]> {
-    const res = await fetch(`${API_URL}/books/borrowedBooks`, {
+    const res = await fetchWithAuth(`/books/borrowedBooks`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

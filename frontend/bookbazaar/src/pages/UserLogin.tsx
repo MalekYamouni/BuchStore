@@ -9,10 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/States/userAuthState";
 import useUsers from "@/hooks/useUser";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { tryAutoLogin } from "@/lib/auth";
+import { useAutoLogin } from "@/hooks/userAutoLogin";
 
 export interface UserRegistration {
   name: string;
@@ -33,13 +33,10 @@ export default function UserLogin() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const [loginError, setLoginError] = useState({ username: "", password: "" });
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=<>?{}[\]~])[A-Za-z\d!@#$%^&*()_\-+=<>?{}[\]~]{8,}$/;
 
-  // Beim Mount versuchen, automatisch einzuloggen
-  useEffect(() => {
-    tryAutoLogin().then((ok) => {
-      if (ok) navigate("/home"); // User bleibt eingeloggt
-    });
-  }, []);
+  useAutoLogin("/home");
 
   const {
     register: registerRegisterForm,
@@ -107,7 +104,9 @@ export default function UserLogin() {
       <div className="min-h-screen bg-background text-foreground grid place-items-center px-4">
         <Card className="w-full max-w-md bg-card border border-border rounded-2xl shadow-md min-h-[30rem] flex flex-col">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Registrieren</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              Registrieren
+            </CardTitle>
           </CardHeader>
           <form
             onSubmit={handleRegisterSubmit(onSubmitRegistration)}
@@ -116,27 +115,79 @@ export default function UserLogin() {
             <CardContent className="flex-1">
               <div className="space-y-4">
                 <Input
-                  {...registerRegisterForm("name", { required: true })}
+                  {...registerRegisterForm("name", {
+                    required: "Vorname ist erforderlich",
+                    minLength: {
+                      value: 4,
+                      message: "Name muss mindestens 4 Zeichen beinhalten",
+                    },
+                  })}
+                  className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
                   placeholder="Vorname"
                 />
+                {registerErrors.name && (
+                  <p className="text-red-500 text-sm">
+                    {registerErrors.name.message}
+                  </p>
+                )}
                 <Input
-                  {...registerRegisterForm("lastname", { required: true })}
+                  {...registerRegisterForm("lastname", {
+                    required: "Nachname ist erforderlich",
+                    minLength: {
+                      value: 4,
+                      message: "Nachname muss mindestens 4 Zeichen beinhalten",
+                    },
+                  })}
+                  className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
                   placeholder="Nachname"
                 />
+                {registerErrors.lastname && (
+                  <p className="text-red-500 text-sm">
+                    {registerErrors.lastname.message}
+                  </p>
+                )}
                 <Input
-                  {...registerRegisterForm("email", { required: true })}
+                  {...registerRegisterForm("email", {
+                    required: "Email ist erforderlich",
+                  })}
+                  className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
                   placeholder="Email"
                   type="email"
                 />
                 <Input
-                  {...registerRegisterForm("username", { required: true })}
+                  {...registerRegisterForm("username", {
+                    required: "Username ist erforderlich",
+                    minLength: {
+                      value: 5,
+                      message: "Username muss mindestens 5 Zeichen beinhalten",
+                    },
+                  })}
+                  className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
                   placeholder="Username"
                 />
+                {registerErrors.username && (
+                  <p className="text-red-500 text-sm">
+                    {registerErrors.username.message}
+                  </p>
+                )}{" "}
                 <Input
-                  {...registerRegisterForm("password", { required: true })}
+                  {...registerRegisterForm("password", {
+                    required: "Passwort erforderlich",
+                    pattern: {
+                      value: passwordRegex,
+                      message:
+                        "Passwort muss mindestens 8 Zeichen, einen Großbuchstaben, eine Zahl und ein Sonderzeichen enthalten",
+                    },
+                  })}
+                  className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
                   placeholder="Passwort"
                   type="password"
                 />
+                {registerErrors.password && (
+                  <p className="text-red-500 text-sm">
+                    {registerErrors.password.message}
+                  </p>
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-3 pt-4">
@@ -176,7 +227,8 @@ export default function UserLogin() {
             <div className="flex flex-col space-y-4">
               <Input
                 placeholder="Username"
-                {...registerLoginForm("username", { required: true })}
+                className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
+                {...registerLoginForm("username", { required: "Bitte geben Sie Ihren Usernamen ein" })}
               />
               {loginError.username && (
                 <p className="text-red-500">{loginError.username}</p>
@@ -184,7 +236,8 @@ export default function UserLogin() {
               <Input
                 placeholder="Passwort"
                 type="password"
-                {...registerLoginForm("password", { required: true })}
+                className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
+                {...registerLoginForm("password", { required: "Bitte geben Sie Ihr Passwort ein" })}
               />
               {loginError.password && (
                 <p className="text-red-500">{loginError.password}</p>
