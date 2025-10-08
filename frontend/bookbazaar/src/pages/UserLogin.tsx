@@ -27,7 +27,7 @@ export interface UserLogin {
   password: string;
 }
 
-function UserLogin() {
+export default function UserLogin() {
   const { addNewUser } = useUsers();
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
@@ -102,27 +102,58 @@ function UserLogin() {
     }
   };
 
-
   if (showRegister) {
     return (
-      <div className="flex p-40 justify-center min-h-screen bg-gray-100">
-        <Card className="w-120 h-150 shadow-lg rounded-2xl hover:scale-105 transition-transform duration-300 gap-5">
+      <div className="min-h-screen bg-background text-foreground grid place-items-center px-4">
+        <Card className="w-full max-w-md bg-card border border-border rounded-2xl shadow-md min-h-[30rem] flex flex-col">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">Registrieren</CardTitle>
           </CardHeader>
-          <form onSubmit={handleRegisterSubmit(onSubmitRegistration)}>
-            <CardContent>
+          <form
+            onSubmit={handleRegisterSubmit(onSubmitRegistration)}
+            className="flex-1 flex flex-col"
+          >
+            <CardContent className="flex-1">
               <div className="space-y-4">
-                <Input {...registerRegisterForm("name", { required: true })} placeholder="Vorname" />
-                <Input {...registerRegisterForm("lastname", { required: true })} placeholder="Nachname" />
-                <Input {...registerRegisterForm("email", { required: true })} placeholder="Email" type="email" />
-                <Input {...registerRegisterForm("username", { required: true })} placeholder="Username" />
-                <Input {...registerRegisterForm("password", { required: true })} placeholder="Passwort" type="password" />
+                <Input
+                  {...registerRegisterForm("name", { required: true })}
+                  placeholder="Vorname"
+                />
+                <Input
+                  {...registerRegisterForm("lastname", { required: true })}
+                  placeholder="Nachname"
+                />
+                <Input
+                  {...registerRegisterForm("email", { required: true })}
+                  placeholder="Email"
+                  type="email"
+                />
+                <Input
+                  {...registerRegisterForm("username", { required: true })}
+                  placeholder="Username"
+                />
+                <Input
+                  {...registerRegisterForm("password", { required: true })}
+                  placeholder="Passwort"
+                  type="password"
+                />
               </div>
             </CardContent>
-            <CardFooter className="flex justify-start gap-3 pt-3">
-              <Button type="submit">Registrieren</Button>
-              <Button onClick={() => setShowRegister(false)}>Zurück</Button>
+            <CardFooter className="flex flex-col gap-3 pt-4">
+              <Button
+                type="submit"
+                className="w-full bg-muted text-foreground border border-border hover:bg-muted/80"
+              >
+                Registrieren
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setShowRegister(false)}
+                variant="outline"
+                className="w-full bg-muted text-foreground border border-border hover:bg-muted/80"
+              >
+                Zurück
+              </Button>
             </CardFooter>
           </form>
         </Card>
@@ -131,28 +162,53 @@ function UserLogin() {
   }
 
   return (
-    <div className="flex p-40 justify-center min-h-screen bg-gray-100">
-      <Card className="w-120 h-70 shadow-lg rounded-2xl hover:scale-105 transition-transform duration-300 gap-5">
+    <div className="min-h-screen bg-background text-foreground grid place-items-center px-4">
+      {/* Login: kompakter, keine min-h, kein flex-stretching */}
+      <Card className="w-full max-w-md bg-card border border-border rounded-2xl shadow-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">Anmeldung</CardTitle>
         </CardHeader>
-        <form onSubmit={handleLoginSubmit(onSubmitLogin)}>
+        <form
+          onSubmit={handleLoginSubmit(onSubmitLogin)}
+          className="flex flex-col"
+        >
           <CardContent>
             <div className="flex flex-col space-y-4">
-              <Input placeholder="Username" {...registerLoginForm("username", { required: true })} />
-              {loginError.username && <p className="text-red-500">{loginError.username}</p>}
-              <Input placeholder="Passwort" type="password" {...registerLoginForm("password", { required: true })} />
-              {loginError.password && <p className="text-red-500">{loginError.password}</p>}
+              <Input
+                placeholder="Username"
+                {...registerLoginForm("username", { required: true })}
+              />
+              {loginError.username && (
+                <p className="text-red-500">{loginError.username}</p>
+              )}
+              <Input
+                placeholder="Passwort"
+                type="password"
+                {...registerLoginForm("password", { required: true })}
+              />
+              {loginError.password && (
+                <p className="text-red-500">{loginError.password}</p>
+              )}
             </div>
           </CardContent>
-          <CardFooter className="flex justify-start gap-3 pt-3">
-            <Button type="submit">Anmelden</Button>
-            <Button onClick={() => setShowRegister(true)}>Registrieren</Button>
+          {/* Einheiltiche Abstände der Buttons */}
+          <CardFooter className="flex flex-col gap-3 pt-4">
+            <Button
+              type="submit"
+              className="w-full bg-muted text-foreground border border-border hover:bg-muted/80"
+            >
+              Anmelden
+            </Button>
+            <Button
+              onClick={() => setShowRegister(true)}
+              variant="outline"
+              className="w-full bg-muted text-foreground border border-border hover:bg-muted/80"
+            >
+              Registrieren
+            </Button>
           </CardFooter>
         </form>
       </Card>
     </div>
   );
 }
-
-export default UserLogin;
