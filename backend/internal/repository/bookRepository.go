@@ -3,9 +3,12 @@ package repository
 import (
 	"bookbazaar-backend/internal/models"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type BookRepository struct {
@@ -459,71 +462,86 @@ func (r *BookRepository) RemoveFromCart(userId, bookId int) error {
 }
 
 func (r *BookRepository) GetFavoriteBooks(userId int) ([]models.Book, error) {
-	tx, err := r.db.Begin()
-
+	rows, err := r.db.Query(`
+        SELECT
+            b.id,
+            b.author,
+            b.name,
+            b.price,
+            b.genre,
+            b.description,
+            b.descriptionlong,
+            b.quantity,
+            b.borrowprice
+        FROM books b
+        INNER JOIN user_favorites uf ON b.id = uf.book_id
+        WHERE uf.user_id = $1
+        ORDER BY uf.created_at DESC
+    `, userId)
 	if err != nil {
 		return nil, err
 	}
-
-	defer tx.Rollback()
-
-	query := "SELECT * FROM books b INNER JOIN user_favorites uf ON b.id = uf.book_id WHERE uf.user_id=$1"
-
-	rows, err := tx.Query(query, userId)
-
-	if err != nil {
-		return nil, err
-	}
-
 	defer rows.Close()
 
 	var books []models.Book
-
 	for rows.Next() {
 		var book models.Book
-
-		if err := rows.Scan(&book.ID, &book.Author, &book.Name, &book.Price, &book.Description, &book.Descriptionlong, &book.Genre, &book.Quantity, &book.DueAt, &book.ReservationExpiresAt); err != nil {
+		if err := rows.Scan(
+			&book.ID,
+			&book.Author,
+			&book.Name,
+			&book.Price,
+			&book.Genre,
+			&book.Description,
+			&book.Descriptionlong,
+			&book.Quantity,
+			&book.BorrowPrice,
+		); err != nil {
 			return nil, err
 		}
-
 		books = append(books, book)
 	}
-
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
 	return books, nil
 }
 
 func (r *BookRepository) AddToFavorites(userId, bookId int) error {
-	tx, err := r.db.Begin()
+	// idempotent: doppelte Einträge sind ok (tun nichts)
+	const q = `
+        INSERT INTO user_favorites (user_id, book_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id, book_id) DO NOTHING;
+    `
+
+	_, err := r.db.Exec(q, userId, bookId)
 	if err != nil {
-		return err
-	}
-
-	defer tx.Rollback()
-
-	query := "INSERT INTO user_favorites (user_id, book_id) VALUES ($1, $2)"
-
-	res, err := tx.Exec(query, userId, bookId)
-
-	if err != nil {
-		return err
-	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		log.Println("Fehler beim Abfragen der betroffenen Zeilen in RemoveFromCart", err)
-		return err
-	}
-
-	if rowsAffected == 0 {
-		log.Println("AddToFavorites: kein Eintrag gefunden für user", userId, "book", bookId)
-		if err := tx.Commit(); err != nil {
-			return err
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			// hilfreiche Logs im Backend
+			log.Printf("AddToFavorites PG error: code=%s detail=%s msg=%s where=%s", pgErr.Code, pgErr.Detail, pgErr.Message, pgErr.Where)
+		} else {
+			log.Printf("AddToFavorites SQL error: %v", err)
 		}
-		return nil
+		return err
+	}
+	return nil
+}
+
+func (r *BookRepository) DeleteFavorite(userId, bookId int) error {
+	const q = `DELETE FROM user_favorites WHERE user_id=$1 and book_id=$2`
+
+	_, err := r.db.Exec(q, userId, bookId)
+
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			log.Printf("deleteFavorite PG error: code:%s detail=%s msg=%s where=%s", pgErr.Code, pgErr.Detail, pgErr.Message, pgErr.Where)
+		} else {
+			log.Printf("deleteFavorite SQL error: %v", err)
+		}
+		return err
 	}
 
 	return nil

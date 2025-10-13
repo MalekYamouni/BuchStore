@@ -299,6 +299,9 @@ func (c *BookController) AddToFavorites(ctx *gin.Context) {
 	bookIdStr := ctx.Param("id")
 	bookId, err := strconv.Atoi(bookIdStr)
 
+	log.Println("userId: ", user.ID)
+	log.Println("bookId:", bookId)
+
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "Ungültige Buch-ID"})
 		return
@@ -309,5 +312,52 @@ func (c *BookController) AddToFavorites(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Buch erfolgreich den Favoriten hinzugefügt."})
+	ctx.JSON(201, gin.H{"message": "Buch erfolgreich den Favoriten hinzugefügt."})
+}
+
+func (c *BookController) GetFavoriteBooks(ctx *gin.Context) {
+	userAny, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(400, gin.H{"error": "Nicht eingeloggt"})
+		return
+	}
+
+	user := userAny.(models.User)
+
+	favorites, err := c.Service.GetFavoriteBooks(user.ID)
+
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, favorites)
+}
+
+func (c *BookController) DeleteFavorite(ctx *gin.Context) {
+	userAny, exists := ctx.Get("user")
+
+	if !exists {
+		ctx.JSON(400, gin.H{"error": "Nicht eingeloggt"})
+		return
+	}
+
+	user := userAny.(models.User)
+
+	bookIdStr := ctx.Param("id")
+	bookId, err := strconv.Atoi(bookIdStr)
+
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Ungültige Buch-ID"})
+		return
+	}
+
+	err = c.Service.DeleteFavorite(user.ID, bookId)
+
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "Buch wurde erfolgreich aus den Favoriten gelöscht"})
 }

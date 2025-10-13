@@ -3,7 +3,6 @@ import { fetchWithAuth } from "../lib/fetchWithAuth";
 import type { User } from "@/interface/User";
 import type { UserRegistration } from "@/pages/UserLogin";
 import { apiFetch } from "@/lib/api";
-import { te } from "date-fns/locale";
 
 async function getUserById(): Promise<User> {
   const res = await fetchWithAuth(`/user/me`);

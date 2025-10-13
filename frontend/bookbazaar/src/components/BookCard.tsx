@@ -19,6 +19,9 @@ import useInView from "@/hooks/useInView";
 import useBorrow from "@/hooks/useBorrow";
 import useCart from "@/hooks/useCart";
 import type { Book } from "@/interface/Book";
+import useFavorites from "@/hooks/useFavorites";
+import useUsers from "@/hooks/useUser";
+import { useAuthStore } from "@/States/userAuthState";
 
 function BookCard({
   book,
@@ -36,6 +39,8 @@ function BookCard({
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const { ref, inView } = useInView<HTMLDivElement>();
   const { addToCart } = useCart();
+  const { addtofavorites } = useFavorites();
+  const isAdmin = useAuthStore.getState().isAdmin();
 
   const addLocal = useCartStore((s) => s.addToCart);
   const removeLocal = useCartStore((s) => s.removeFromCart);
@@ -66,7 +71,6 @@ function BookCard({
     return () => clearInterval(id);
   }, [book?.dueAt]);
 
-
   function formatRemainingTime(ms: number) {
     if (ms <= 0) return "Überfällig!";
     const totalSeconds = Math.floor(ms / 1000);
@@ -95,122 +99,128 @@ function BookCard({
   };
 
   return (
-    <div ref={ref} className={`transform transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+    <div
+      ref={ref}
+      className={`transform transition-all duration-700 ${
+        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+    >
       <Card
         onClick={() => onClick(book)}
         className={`w-150 ml-5 display-flex justify-center shadow-lg rounded-2xl gap-5 transition-transform duration-300 hover:scale-105 card-tilt cursor-pointer`}
       >
-      <CardHeader>
-        <CardTitle className="text-lg fron-semibold leading-none tracking-tight">
-          {book.name}
-        </CardTitle>
-      </CardHeader>
-  <CardContent className={`grid grid-cols-2 gap-4`}>
-        <div className="flex flex-col space-y-2">
-          <p>Autor: {book.author}</p>
+        <CardHeader>
+          <CardTitle className="text-lg fron-semibold leading-none tracking-tight">
+            {book.name}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className={`grid grid-cols-2 gap-4`}>
+          <div className="flex flex-col space-y-2">
+            <p>Autor: {book.author}</p>
 
-          {!isBorrowpage ? (
-            <p>Preis: {book.price.toFixed(2)}€</p>
-          ) : (
-            <p>Leihpreis: {book.borrowPrice.toFixed(2)}</p>
-          )}
+            {!isBorrowpage ? (
+              <p>Preis: {book.price.toFixed(2)}€</p>
+            ) : (
+              <p>Leihpreis: {book.borrowPrice.toFixed(2)}</p>
+            )}
 
-          <p>Genre: {book.genre}</p>
-        </div>
-        <div>
-          <p>Beschreibung...</p>
-          <p className=" text-sm text-muted-foreground">{book.description}</p>
-        </div>
-      </CardContent>
+            <p>Genre: {book.genre}</p>
+          </div>
+          <div>
+            <p>Beschreibung...</p>
+            <p className=" text-sm text-muted-foreground">{book.description}</p>
+          </div>
+        </CardContent>
 
-      <CardFooter className="flex justify-start gap-3">
-        <Button
-          onClick={(e) => {
-            e.stopPropagation(), addToFavorite(book);
-          }}
-          className="bg-muted text-foreground hover:bg-muted/80 rounded-full px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 border border-border"
-          variant={"secondary"}
-        >
-          {isFavorite ? <HeartMinus /> : <HeartPlus />}
-        </Button>
-
-        {showCartButton && (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation(), handleAdd(book);
-            }}
-            className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
-          >
-            <ShoppingBasket />
-          </Button>
-        )}
-
-        {showDeleteButton && deleteBookFrontEnd && (
+        <CardFooter className="flex justify-start gap-3">
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              deleteBookFrontEnd.mutate(book.id);
+              addtofavorites.mutate(book.id);
             }}
-            className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
+            className="bg-muted text-foreground hover:bg-muted/80 rounded-full px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 border border-border"
+            variant={"secondary"}
           >
-            <Trash2 />
+            {isFavorite ? <HeartMinus /> : <HeartPlus />}
           </Button>
-        )}
 
-        {showBorrowButton &&
-          (!book.dueAt || book.dueAt === "0001-01-01T00:00:00Z") && (
+          {showCartButton && (
             <Button
               onClick={(e) => {
-                e.stopPropagation();
-                handleBorrow(book.id);
+                e.stopPropagation(), handleAdd(book);
               }}
               className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
             >
-              ausleihen
+              <ShoppingBasket />
             </Button>
           )}
 
-        {showBorrowButton &&
-          book.dueAt &&
-          book.dueAt !== "0001-01-01T00:00:00Z" && (
+          {showDeleteButton && deleteBookFrontEnd && isAdmin &&  (
             <Button
               onClick={(e) => {
                 e.stopPropagation();
-                handleGiveBack(book.id);
+                deleteBookFrontEnd.mutate(book.id);
               }}
               className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
             >
-              zurückgeben
+              <Trash2 />
             </Button>
           )}
 
-        {/* Countdown / Fälligkeitsanzeige: show live countdown wenn remainingMs gesetzt, sonst Fälligkeitsdatum */}
-        {book.dueAt && book.dueAt !== "0001-01-01T00:00:00Z" && (
-          <span
-            className={
-              remainingMs !== null && remainingMs <= 0
-                ? "text-red-600 font-bold"
-                : ""
-            }
-          >
-            {remainingMs !== null
-              ? formatRemainingTime(remainingMs)
-              : "Fällig am: " + new Date(book.dueAt).toLocaleString("de-DE")}
-          </span>
-        )}
-      </CardFooter>
+          {showBorrowButton &&
+            (!book.dueAt || book.dueAt === "0001-01-01T00:00:00Z") && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBorrow(book.id);
+                }}
+                className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
+              >
+                ausleihen
+              </Button>
+            )}
 
-      <div className="pl-6">
-        <Rating value={rating} onValueChange={setRating}>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <RatingButton
-              className="text-xs text-muted-foreground"
-              key={index}
-            />
-          ))}
-        </Rating>
-        <p>Lager:{book.quantity}</p>
-      </div>
+          {showBorrowButton &&
+            book.dueAt &&
+            book.dueAt !== "0001-01-01T00:00:00Z" && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleGiveBack(book.id);
+                }}
+                className="bg-muted hover:bg-muted/80 text-foreground rounded-full px-3 py-2 text-lg  transition-transform duration-200 hover:scale-110 border border-border"
+              >
+                zurückgeben
+              </Button>
+            )}
+
+          {/* Countdown / Fälligkeitsanzeige: show live countdown wenn remainingMs gesetzt, sonst Fälligkeitsdatum */}
+          {book.dueAt && book.dueAt !== "0001-01-01T00:00:00Z" && (
+            <span
+              className={
+                remainingMs !== null && remainingMs <= 0
+                  ? "text-red-600 font-bold"
+                  : ""
+              }
+            >
+              {remainingMs !== null
+                ? formatRemainingTime(remainingMs)
+                : "Fällig am: " + new Date(book.dueAt).toLocaleString("de-DE")}
+            </span>
+          )}
+        </CardFooter>
+
+        <div className="pl-6">
+          <Rating value={rating} onValueChange={setRating}>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <RatingButton
+                className="text-xs text-muted-foreground"
+                key={index}
+              />
+            ))}
+          </Rating>
+          <p>Lager:{book.quantity}</p>
+        </div>
       </Card>
     </div>
   );

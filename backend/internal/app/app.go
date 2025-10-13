@@ -50,24 +50,39 @@ func Run() {
 
 	api := r.Group("/api")
 	{
+		// Homepage
 		api.GET("/books", authMiddleware, bookController.GetBooks)
+		api.POST("/books", authMiddleware, authAdminOnly, bookController.AddBooks)
+		api.DELETE("/books/:id", authMiddleware, authAdminOnly, bookController.DeleteBooks)
+
+		//Borrow
+		api.GET("/books/borrowedBooks", authMiddleware, bookController.GetBorrowedBooks)
+		api.POST("/books/:id/borrowBook", authMiddleware, bookController.BorrowBook)
+		api.PUT("/books/:id/giveBookBack", authMiddleware, bookController.GiveBorrowedBookBack)
+
+		//Buy
+		api.POST("/books/:id/buyBook", authMiddleware, bookController.BuyBook)
+		api.POST("/books/buyBooks", authMiddleware, bookController.BuyBooks)
+
+		//Users
 		api.GET("/users", authMiddleware, authAdminOnly, userController.GetUsers)
 		api.GET("/user/me", authMiddleware, userController.GetUserByUserId)
 		api.POST("/addUser", userController.AddUser)
-		api.POST("/books/:id/borrowBook", authMiddleware, bookController.BorrowBook)
-		api.GET("/books/borrowedBooks", authMiddleware, bookController.GetBorrowedBooks)
-		api.POST("/books/:id/buyBook", authMiddleware, bookController.BuyBook)
-		api.POST("/books/buyBooks", authMiddleware, bookController.BuyBooks)
-		api.PUT("/books/:id/giveBookBack", authMiddleware, bookController.GiveBorrowedBookBack)
+
+		//Login
 		api.POST("/login", authController.Login)
 		api.POST("/refresh", authController.Refresh)
 		api.POST("/logout", authController.Logout)
-		api.POST("/books", authMiddleware, authAdminOnly, bookController.AddBooks)
-		api.DELETE("/books/:id", authMiddleware, authAdminOnly, bookController.DeleteBooks)
+
+		//Cart
 		api.GET("/books/cart", authMiddleware, bookController.GetCartBooks)
 		api.POST("/books/cart/:id", authMiddleware, bookController.AddToCart)
-		api.DELETE("/books/cart/:id", authMiddleware, bookController.RemoveFromCart)
+		api.DELETE("/books/cart/:id", authMiddleware, authAdminOnly, bookController.RemoveFromCart)
+
+		//Favorites
+		api.GET("/books/Favorites", authMiddleware, bookController.GetFavoriteBooks)
 		api.POST("/books/addToFavorites/:id", authMiddleware, bookController.AddToFavorites)
+		api.DELETE("/books/deleteFavorite/:id", authMiddleware, bookController.DeleteFavorite)
 	}
 
 	if err := r.Run(); err != nil {

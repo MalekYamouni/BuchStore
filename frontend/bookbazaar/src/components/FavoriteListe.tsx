@@ -13,14 +13,18 @@ import {
 } from "./ui/select";
 import { Input } from "./ui/input";
 import type { Book } from "@/interface/Book";
+import useFavorites from "@/hooks/useFavorites";
 
 function FavoriteList() {
   const { favorites } = useFavoritesStore();
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedCard, setSelectedCard] = useState<Book>();
+  const {data: books} = useFavorites();
 
-  const filteredFavorites = favorites.filter((book) => {
+
+
+  const filteredFavorites = books?.filter((book) => {
     if (filter !== "all" && book.genre !== filter) {
       return false;
     }
@@ -68,12 +72,12 @@ function FavoriteList() {
           <div className="ml-5 mt-5">
             <SectionHeader title="Ihre Favoriten" />
           </div>
-          {filteredFavorites.length === 0 ? (
+          {filteredFavorites?.length === 0 ? (
             <div className="text-2xl m-5 flex items-center gap-3">
               Keine Favoriten hinzugefügt
             </div>
           ) : (
-            filteredFavorites.map((book) => (
+            filteredFavorites?.map((book) => (
               <BookCard
                 key={book.id}
                 book={book}
