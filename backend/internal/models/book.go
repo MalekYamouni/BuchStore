@@ -8,8 +8,9 @@ type Book struct {
 	Genre                string  `json:"genre"`
 	Description          string  `json:"description"`
 	Descriptionlong      string  `json:"descriptionLong"`
-	Quantity             int     `json:"quantity" validate:"min=0"`
-	BorrowPrice          float64 `json:"borrowPrice" validate:"min=0"`
+	Quantity             int     `json:"quantity"` // Lagerbestand
+	BorrowPrice          float64 `json:"borrowprice"`
 	DueAt                string  `json:"dueAt,omitempty"`
 	ReservationExpiresAt string  `json:"reservationExpiresAt,omitempty"`
+	OrderedQuantity      int     `json:"orderedQuantity,omitempty"` // NEU: Kaufanzahl für Order-Views
 }

@@ -18,6 +18,7 @@ import useUsers from "@/hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import useCart from "@/hooks/useCart";
 import SectionHeader from "@/components/SectionHeader";
+import { OrderList } from "./OrderList";
 
 function ShoppingCart() {
   const [filter, setFilter] = useState("all");
@@ -107,57 +108,80 @@ function ShoppingCart() {
           className="w-60"
         ></Input>
       </div>
-      <div className="ml-5">
-        <div className="w-120">
-          <SectionHeader title="Ihre Artikel" />
+
+      {/* Drei Spalten: links Artikel, Mitte Aktionen, rechts Bestellungen */}
+      <div className="grid grid-cols-3 gap-10">
+        {/* Linke Spalte: Artikel-Liste */}
+        <div className="col-span-1 flex flex-col gap-4">
+          <div className="ml-5">
+            <div className="w-120">
+              <SectionHeader title="Ihre Artikel" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            {filteredCart.length === 0 ? (
+              <Label className="text-2xl m-5 flex items-center gap-3">
+                Keine Artikel hinzugefügt
+              </Label>
+            ) : (
+              filteredCart.map((book) => (
+                <ShoppingCartCard
+                  key={book.id}
+                  book={book}
+                  onRemove={async (bookId) => {
+                    removeLocal(bookId);
+                    try {
+                      await removeFromCart.mutateAsync(bookId);
+                    } catch (err) {
+                      addLocal(book);
+                      console.error("Fehler beim Entfernen aus Warenkorb:", err);
+                    }
+                  }}
+                  onQtyChange={(bookId, delta) => {
+                    updateQuantityLocal(bookId, delta);
+                  }}
+                />
+              ))
+            )}
+          </div>
         </div>
-      </div>
-      {filteredCart.length === 0 ? (
-        <Label className="text-2xl m-5 flex items-center gap-3">
-          Keine Artikel hinzugefügt
-        </Label>
-      ) : (
-        filteredCart.map((book) => (
-          <ShoppingCartCard
-            key={book.id}
-            book={book}
-            onRemove={async (bookId) => {
-              removeLocal(bookId);
-              try {
-                await removeFromCart.mutateAsync(bookId);
-              } catch (err) {
-                addLocal(book);
-                console.error("Fehler beim Entfernen aus Warenkorb:", err);
-              }
-            }}
-            onQtyChange={(bookId, delta) => {
-              updateQuantityLocal(bookId, delta);
-            }}
-          />
-        ))
-      )}
-      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-muted max-w-3xl w-full mx-auto hover:underline border border-border">
-        {filteredCart.length > 0 && (
-          <Button
-            variant="outline"
-            className="w-full rounded-4xl bg-muted text-foreground border border-border hover:bg-muted/80"
-            onClick={handleBuyAll}
-          >
-            <ShoppingBasket className="w-full"></ShoppingBasket>
-          </Button>
-        )}
-      </div>
-      <div className="flex justify-center items-center font-bold text-2xl rounded-4xl bg-card text-foreground max-w-3xl w-full mx-auto">
-        {totalPrice === 0 ? (
-          <span
-            onClick={() => navigate("/books")}
-            className="flex items-center gap-3 cursor-pointer hover:underline"
-          >
-            Stöber Sie hier<GlassesIcon></GlassesIcon>
-          </span>
-        ) : (
-          <SectionHeader title={`Gesamtpreis ${totalPrice.toFixed(2)}€`} />
-        )}
+
+        {/* Mittlere Spalte: sticky unten */}
+        <div className="col-span-1 sticky top-20 h-[calc(100vh-5rem)] flex flex-col">
+          <div className="mt-auto space-y-4">
+            <div className="flex justify-center items-center font-bold text-2xl rounded-2xl bg-muted w-full border border-border">
+              {filteredCart.length > 0 && (
+                <Button
+                  variant="outline"
+                  className="w-full rounded-4xl bg-muted text-foreground border border-border hover:bg-muted/80"
+                  onClick={handleBuyAll}
+                >
+                  <ShoppingBasket className="w-full" />
+                </Button>
+              )}
+            </div>
+            <div className="flex justify-center items-center font-bold text-2xl rounded-4xl text-foreground w-full">
+              {totalPrice === 0 ? (
+                <span
+                  onClick={() => navigate("/home")}
+                  className="flex items-center gap-3 cursor-pointer hover:underline"
+                >
+                  Stöbern Sie hier<GlassesIcon />
+                </span>
+              ) : (
+                <SectionHeader title={`Gesamtpreis ${totalPrice.toFixed(2)}€`} />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Rechte Spalte: Bestellungen-Panel */}
+        <aside className="col-span-1 border border-border text-foreground p-5 rounded-2xl shadow-lg">
+          <SectionHeader title="Bestellt" />
+          <div>
+            <OrderList />
+          </div>
+        </aside>
       </div>
     </div>
   );

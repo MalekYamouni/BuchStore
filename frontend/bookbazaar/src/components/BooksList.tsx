@@ -14,9 +14,10 @@ import {
 } from "./ui/select";
 import { Input } from "./ui/input";
 import type { Book } from "@/interface/Book";
+import useFavorites from "@/hooks/useFavorites";
 
 function BookList() {
-  const { favorites } = useFavoritesStore();
+  const { favorites } = useFavorites();
   const { data: books } = useBooks();
   const [genreFilter, setGenreFilter] = useState("all");
   const [search, setSearch] = useState("");

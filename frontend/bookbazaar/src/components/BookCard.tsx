@@ -12,7 +12,6 @@ import {
 import { Button } from "./ui/button";
 import { useCartStore } from "@/States/useCartState";
 import { HeartMinus, HeartPlus, ShoppingBasket, Trash2 } from "lucide-react";
-import { useFavoritesStore } from "@/States/useFavoriteState";
 import { Rating, RatingButton } from "./ui/shadcn-io/rating";
 import { useEffect, useState } from "react";
 import useInView from "@/hooks/useInView";
@@ -20,7 +19,6 @@ import useBorrow from "@/hooks/useBorrow";
 import useCart from "@/hooks/useCart";
 import type { Book } from "@/interface/Book";
 import useFavorites from "@/hooks/useFavorites";
-import useUsers from "@/hooks/useUser";
 import { useAuthStore } from "@/States/userAuthState";
 
 function BookCard({
@@ -33,13 +31,12 @@ function BookCard({
   isBorrowpage,
 }: BookCardProps) {
   const { deleteBookFrontEnd } = useBooks();
-  const { addToFavorite } = useFavoritesStore();
   const [rating, setRating] = useState(3);
   const { borrowBookMutation, giveBookBack } = useBorrow();
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const { ref, inView } = useInView<HTMLDivElement>();
   const { addToCart } = useCart();
-  const { addtofavorites } = useFavorites();
+  const { addtofavorites, deleteFavorite } = useFavorites();
   const isAdmin = useAuthStore.getState().isAdmin();
 
   const addLocal = useCartStore((s) => s.addToCart);
@@ -54,6 +51,7 @@ function BookCard({
       console.error("Fehler beim Hinzufügen zum Warenkorb:", err);
     }
   }
+
   // Countdown Timer für verbleibende Zeit bis zur Rückgabe
   useEffect(() => {
     if (!book?.dueAt || book.dueAt === "0001-01-01T00:00:00Z") {
@@ -121,7 +119,7 @@ function BookCard({
             {!isBorrowpage ? (
               <p>Preis: {book.price.toFixed(2)}€</p>
             ) : (
-              <p>Leihpreis: {book.borrowPrice.toFixed(2)}</p>
+              <p>Leihpreis: {book.borrowprice.toFixed(2)}</p>
             )}
 
             <p>Genre: {book.genre}</p>
@@ -136,7 +134,12 @@ function BookCard({
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              addtofavorites.mutate(book.id);
+              addLocal(book);
+              if (isFavorite) {
+                deleteFavorite.mutate(book.id);
+              } else {
+                addtofavorites.mutate(book.id);
+              }
             }}
             className="bg-muted text-foreground hover:bg-muted/80 rounded-full px-3 py-2 text-lg transition-transform duration-200 hover:scale-110 border border-border"
             variant={"secondary"}
@@ -155,7 +158,7 @@ function BookCard({
             </Button>
           )}
 
-          {showDeleteButton && deleteBookFrontEnd && isAdmin &&  (
+          {showDeleteButton && deleteBookFrontEnd && isAdmin && (
             <Button
               onClick={(e) => {
                 e.stopPropagation();

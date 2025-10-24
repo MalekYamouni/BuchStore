@@ -320,7 +320,7 @@ func (r *BookRepository) GiveBorrowedBookBack(userId, bookId int) error {
 	tx, err := r.db.Begin()
 
 	if err != nil {
-		fmt.Errorf("datenbank nicht erreichbar")
+		log.Println("Datenbank nicht erreichbar:", err)
 		return err
 	}
 
@@ -545,4 +545,47 @@ func (r *BookRepository) DeleteFavorite(userId, bookId int) error {
 	}
 
 	return nil
+}
+
+func (r *BookRepository) GetOrderedBooks(userId int) ([]models.Book, error) {
+	rows, err := r.db.Query(`
+        SELECT
+            b.id, b.author, b.name, b.price, b.genre, b.description, b.descriptionlong, b.quantity, b.borrowprice,
+            COALESCE(SUM(ub.quantity), COUNT(*)) AS ordered_quantity
+        FROM books b
+        INNER JOIN user_books ub ON b.id = ub.book_id
+        WHERE ub.user_id = $1
+        GROUP BY b.id, b.author, b.name, b.price, b.genre, b.description, b.descriptionlong, b.quantity, b.borrowprice
+        ORDER BY MAX(ub.purchased_at) DESC
+    `, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var books []models.Book
+	for rows.Next() {
+		var b models.Book
+		var orderedQty int
+		if err := rows.Scan(
+			&b.ID,
+			&b.Author,
+			&b.Name,
+			&b.Price,
+			&b.Genre,
+			&b.Description,
+			&b.Descriptionlong,
+			&b.Quantity,
+			&b.BorrowPrice,
+			&orderedQty,
+		); err != nil {
+			return nil, err
+		}
+		b.OrderedQuantity = orderedQty
+		books = append(books, b)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return books, nil
 }

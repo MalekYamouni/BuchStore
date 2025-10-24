@@ -18,7 +18,7 @@ export const useFavoritesStore = create<FavoriteState>((set, get) => ({
       set({ favorites: favorites.filter((f) => f.id !== book.id) });
     } else {
       // hinzufügen
-      set({ favorites: [...favorites, book] });
+      set({ favorites: [...favorites, book] }); 
     }
   },
 }));

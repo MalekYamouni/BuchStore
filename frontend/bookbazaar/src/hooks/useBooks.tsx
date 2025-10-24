@@ -63,7 +63,7 @@ async function buyBooks(purchases: { bookId: number; quantity: number }[]) {
 
   if (!res.ok) throw new Error("Fehler beim Kaufen der Bücher");
 
-  console.log(res.body)
+  console.log(res.body);
   return res.json();
 }
 
@@ -106,12 +106,13 @@ export default function useBooks() {
   const buyBooksMutation = useMutation({
     mutationFn: ({
       purchases,
-    }: {
+    }:{
       purchases: { bookId: number; quantity: number }[];
     }) => buyBooks(purchases),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["books"] });
       qc.invalidateQueries({ queryKey: ["users"] });
+      qc.invalidateQueries({ queryKey: ["orderedBooks"] });
     },
   });
 

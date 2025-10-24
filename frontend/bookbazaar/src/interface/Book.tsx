@@ -8,7 +8,8 @@ export interface Book {
   description: string;
   descriptionLong: string;
   quantity: number
-  borrowPrice: number
+  borrowprice: number
   dueAt?: string
   reservationExpiresAt?: string
+  orderedQuantity?: number
 }

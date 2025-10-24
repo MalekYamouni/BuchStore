@@ -23,7 +23,8 @@ interface NewBook {
   descriptionLong: string;
   quantity: number;
   isBorrowed: false;
-  borrowPrice: number;
+  borrowprice: number;
+  orderedQty: number;
 }
 
 function AddBook() {
@@ -51,7 +52,8 @@ function AddBook() {
       descriptionLong: data.descriptionLong,
       quantity: 1,
       isBorrowed: false,
-      borrowPrice: data.borrowPrice,
+      borrowprice: data.borrowprice,
+      orderedQty: data.orderedQty,
     };
 
     try {
@@ -108,16 +110,16 @@ function AddBook() {
           <p className="text-red-500 text-sm">{newBookErrors.price.message}</p>
         )}
               <Input
-                {...registerNewBook("borrowPrice", { required: "Leihpreis ist Pflicht", valueAsNumber: true, min: { value: 0.01, message: "Preis muss größer als 0.00 € sein" } })}
+                {...registerNewBook("borrowprice", { required: "Leihpreis ist Pflicht", valueAsNumber: true, min: { value: 0.01, message: "Preis muss größer als 0.00 € sein" } })}
                 placeholder="Leihpreis (€)"
                 type="number"
                 className="w-full"
                 step={0.01}
                 min="0"
               />
-        {newBookErrors.borrowPrice && (
+        {newBookErrors.borrowprice && (
           <p className="text-red-500 text-sm">
-            {newBookErrors.borrowPrice.message}
+            {newBookErrors.borrowprice.message}
           </p>
         )}
             </div>

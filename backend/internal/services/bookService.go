@@ -30,6 +30,7 @@ type BookService interface {
 	AddToFavorites(userId, bookId int) error
 	GetFavoriteBooks(userId int) ([]models.Book, error)
 	DeleteFavorite(userId, bookId int) error
+	GetOrderedBooks(userId int) ([]models.Book, error)
 }
 
 type DefaultBookService struct {
@@ -95,7 +96,7 @@ func (s *DefaultBookService) BuyBook(userId, bookId int) error {
 	}
 
 	if user.Balance <= 0 {
-		fmt.Errorf("user hat zu wenig Geld um ein Buch zu kaufen")
+		log.Println("user hat zu wenig Geld um ein Buch zu kaufen")
 		return err
 	}
 
@@ -221,4 +222,15 @@ func (s *DefaultBookService) DeleteFavorite(userId, bookId int) error {
 		return err
 	}
 	return nil
+}
+
+func (s *DefaultBookService) GetOrderedBooks(userId int) ([]models.Book, error) {
+	books, err := s.repo.GetOrderedBooks(userId)
+
+	if err != nil {
+		log.Println("service Fehler beim getten der gekauften Bücher")
+		return nil, err
+	}
+
+	return books, nil
 }

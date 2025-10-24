@@ -361,3 +361,22 @@ func (c *BookController) DeleteFavorite(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"message": "Buch wurde erfolgreich aus den Favoriten gelöscht"})
 }
+
+func (c *BookController) GetOrderedBooks(ctx *gin.Context) {
+	userAny, exists := ctx.Get("user")
+
+	if !exists {
+		ctx.JSON(400, gin.H{"error": "Nicht eingeloggt"})
+		return
+	}
+
+	user := userAny.(models.User)
+
+	orderedBooks, err := c.Service.GetOrderedBooks(user.ID)
+
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, orderedBooks)
+}

@@ -1,7 +1,6 @@
 // Label removed in favor of SectionHeader for consistent headers
 import BookCard from "./BookCard";
 import { BookHeart } from "lucide-react";
-import { useFavoritesStore } from "@/States/useFavoriteState";
 import { useState } from "react";
 import SectionHeader from "./SectionHeader";
 import {
@@ -16,13 +15,10 @@ import type { Book } from "@/interface/Book";
 import useFavorites from "@/hooks/useFavorites";
 
 function FavoriteList() {
-  const { favorites } = useFavoritesStore();
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedCard, setSelectedCard] = useState<Book>();
   const {data: books} = useFavorites();
-
-
 
   const filteredFavorites = books?.filter((book) => {
     if (filter !== "all" && book.genre !== filter) {
