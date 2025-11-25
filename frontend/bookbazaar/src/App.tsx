@@ -12,12 +12,12 @@ import { useEffect } from "react";
 import { tryAutoLogin } from "./lib/auth";
 import { UserProfile } from "./pages/UserProfile";
 import { ModeToggle } from "./components/ui/mode-toggle";
-
+import UserHistory from "./pages/UserOrderHistory";
 
 function App() {
   useEffect(() => {
-  tryAutoLogin();
-}, []);
+    tryAutoLogin();
+  }, []);
 
   return (
     <BrowserRouter>
@@ -58,22 +58,29 @@ function App() {
           }
         />
         <Route
-          path="borrowBooks"
+          path="/borrowBooks"
           element={
             <ProtectedRoute>
               <BorrowBooks />
             </ProtectedRoute>
           }
         ></Route>
-         <Route
-          path="userProfile"
+        <Route
+          path="/userProfile"
           element={
             <ProtectedRoute>
               <UserProfile />
             </ProtectedRoute>
           }
         ></Route>
-
+        <Route
+          path="/userHistory"
+          element={
+            <ProtectedRoute>
+              <UserHistory />
+            </ProtectedRoute>
+          }
+        ></Route>
       </Routes>
     </BrowserRouter>
   );

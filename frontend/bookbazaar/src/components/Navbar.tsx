@@ -25,6 +25,10 @@ function NavBar() {
     navigate("/userProfile");
   };
 
+  const userHistoryNav = () => {
+    navigate("/userHistory");
+  }
+
   const isAdmin = useAuthStore((s) => s.isAdmin());
   return (
     <div className="sticky top-0 z-50">
@@ -97,6 +101,7 @@ function NavBar() {
               Mein Konto
             </DropdownMenuLabel>
             <DropdownMenuItem className="hover:bg-muted hover:text-foreground" onClick={userProfileNav}>Profil</DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-muted hover:text-foreground" onClick={userHistoryNav}>Verlauf</DropdownMenuItem>
             <DropdownMenuItem className="hover:bg-muted hover:text-foreground">Einstellungen</DropdownMenuItem>
             {isLoggedIn == true ? (
               <DropdownMenuItem

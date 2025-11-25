@@ -78,7 +78,7 @@ func Run() {
 		//Cart
 		api.GET("/books/cart", authMiddleware, bookController.GetCartBooks)
 		api.POST("/books/cart/:id", authMiddleware, bookController.AddToCart)
-		api.DELETE("/books/cart/:id", authMiddleware, authAdminOnly, bookController.RemoveFromCart)
+		api.DELETE("/books/cart/:id", authMiddleware, bookController.RemoveFromCart)
 
 		//Favorites
 		api.GET("/books/Favorites", authMiddleware, bookController.GetFavoriteBooks)
