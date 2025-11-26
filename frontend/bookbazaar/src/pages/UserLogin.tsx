@@ -33,9 +33,7 @@ export default function UserLogin() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const [loginError, setLoginError] = useState({ username: "", password: "" });
-  const passwordRegex =
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=<>?{}[\]~])[A-Za-z\d!@#$%^&*()_\-+=<>?{}[\]~]{8,}$/;
-
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{8,}$/;
   useAutoLogin("/home");
 
   const {
@@ -228,7 +226,9 @@ export default function UserLogin() {
               <Input
                 placeholder="Username"
                 className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
-                {...registerLoginForm("username", { required: "Bitte geben Sie Ihren Usernamen ein" })}
+                {...registerLoginForm("username", {
+                  required: "Bitte geben Sie Ihren Usernamen ein",
+                })}
               />
               {loginError.username && (
                 <p className="text-red-500">{loginError.username}</p>
@@ -237,7 +237,9 @@ export default function UserLogin() {
                 placeholder="Passwort"
                 type="password"
                 className="bg-background text-foreground border-border placeholder:text-muted-foreground focus:bg-background"
-                {...registerLoginForm("password", { required: "Bitte geben Sie Ihr Passwort ein" })}
+                {...registerLoginForm("password", {
+                  required: "Bitte geben Sie Ihr Passwort ein",
+                })}
               />
               {loginError.password && (
                 <p className="text-red-500">{loginError.password}</p>

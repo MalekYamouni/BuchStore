@@ -56,11 +56,19 @@ func (a *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
-	user, err := a.Service.ValidateUser(req.Username, req.Password)
+	// user, err := a.Service.ValidateUser(req.Username, req.Password)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Benutzername oder Passwort falsch"})
+	// 	return
+	// }
+
+	user, err := a.Service.ValidateUserCredentials(req.Username, req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Benutzername oder Passwort falsch"})
 		return
 	}
+
+	println(user)
 
 	accessToken, err := a.createAccessToken(user.ID, user.Role)
 	if err != nil {

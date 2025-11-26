@@ -21,6 +21,7 @@ type UserService interface {
 	StoreRefreshToken(userID int, token string) error
 	ValidateRefreshToken(token string) (int, error)
 	RevokeRefreshToken(token string) error
+	ValidateUserCredentials(username, password string) (*models.User, error)
 }
 
 func hashToken(token string) string {
@@ -94,6 +95,10 @@ func (s *DefaultUserService) ValidateUser(username, password string) (*models.Us
 		return nil, errors.New("ungültiger Benutzer oder Passwort")
 	}
 	return user, nil
+}
+
+func (s *DefaultUserService) ValidateUserCredentials(username, password string) (*models.User, error) {
+	return s.repo.ValidateUserCredentials(username, password)
 }
 
 func (s *DefaultUserService) GetUserByUserId(userId int) (*models.User, error) {

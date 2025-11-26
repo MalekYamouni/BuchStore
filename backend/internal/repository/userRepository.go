@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"log"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -80,9 +82,15 @@ func (r *UserRepository) GetUserByUserId(userId int) (*models.User, error) {
 func (r *UserRepository) AddUser(user *models.User) error {
 	log.Println("Repository.AddUser wurde aufgerufen")
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return err
+	}
+
 	query := `INSERT INTO users ( name, lastname, username, email, password) VALUES($1, $2, $3, $4, $5) RETURNING created, id`
 
-	err := r.db.QueryRow(query, user.Name, user.Lastname, user.Username, user.Email, user.Password).Scan(&user.Created, &user.ID)
+	err = r.db.QueryRow(query, user.Name, user.Lastname, user.Username, user.Email, string(hashedPassword)).Scan(&user.Created, &user.ID)
 
 	if err != nil {
 		log.Println("Fehler beim Insert", err)
@@ -90,6 +98,21 @@ func (r *UserRepository) AddUser(user *models.User) error {
 	}
 	log.Print("Neuer User", user.Name)
 	return nil
+}
+
+func (r *UserRepository) ValidateUserCredentials(username, password string) (*models.User, error) {
+	user, err := r.GetUserByUserName(username)
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		log.Println("Fehler beim Validieren des Passwortes")
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (r *UserRepository) CreateRefreshToken(userID int, tokenHash string, expiresAt time.Time) error {

@@ -15,7 +15,6 @@ async function addUser(user: Omit<UserRegistration, "id">): Promise<User> {
     method: "POST",
     body: JSON.stringify(user),
   });
-  console.log("Response-Status", res.status);
 
   if (!res.ok){
     const text = await res.text();

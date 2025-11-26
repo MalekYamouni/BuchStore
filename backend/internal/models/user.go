@@ -9,7 +9,7 @@ type User struct {
 	Username string    `json:"username" validate:"required,min=5,max=20"`
 	Created  time.Time `json:"created"`
 	Email    string    `json:"email" validate:"required,email"`
-	Password string    `json:"password" validate:"required,min=6"`
+	Password string    `json:"password" validate:"required,min=6,max=72"`
 	Balance  float64   `json:"balance"`
 	Role     string    `json:"role"`
 }
